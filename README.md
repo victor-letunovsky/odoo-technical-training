@@ -118,3 +118,87 @@ Set of permissions:
 `model_id/id` refers to the model which the access right applies to. The standard way to refer to the model is
 `model_<model_name>`, where `<model_name>` is the `_name` of the model with the `.` replaced by `_`. Seems cumbersome?
 Indeed, it is...
+
+# UI
+
+## Data Files
+Documentation: [Data Files](https://www.odoo.com/documentation/16.0/developer/reference/backend/data.html#reference-data)
+
+XML is an alternative to CSV format of data files. When performance is important, the CSV format is preferred over the XML format.
+When the format is complex (e.g. load the structure of a view or an email template), XML format is used.
+
+When the data is linked to views, we add them to the `views` folder.
+
+Actions and menus are standard records in the database loaded through an XML file.
+
+In Odoo, the user interface (actions, menus and views) is largely defined by creating and composing records defined in
+an XML file.
+A common pattern is Menu > Action > View.
+To access records the user navigates through several menu levels; the deepest level is an action which triggers the opening of a list of the records.
+
+## Actions
+Documentation: [Actions](https://www.odoo.com/documentation/16.0/developer/reference/backend/actions.html#reference-actions)
+
+Actions can be triggered in three ways:
+1. by clicking on menu items (linked to specific actions)
+2. by clicking on buttons in views (if these are connected to actions)
+3. as contextual actions on object
+
+Example of action for `test_model`:
+```xml
+<record id="test_model_action" model="ir.actions.act_window">
+    <field name="name">Test action</field>
+    <field name="res_model">test_model</field>
+    <field name="view_mode">tree,form</field>
+</record>
+```
+
+Good example of [simple action](https://github.com/odoo/odoo/blob/09c59012bf80d2ccbafe21c39e604d6cfda72924/addons/crm/views/crm_lost_reason_views.xml#L57-L70) in Odoo.
+
+## Menus
+Documentation: [Shortcuts](https://www.odoo.com/documentation/16.0/developer/reference/backend/data.html#reference-data-shortcuts)
+
+`<menuitem>` is a shortcut to `ir.ui.menu` record to reduce complexity in declaring a menu and connecting it to the corresponding action.
+
+A basic menu for our `test_model_action` is:
+```xml
+<!-- The menu `test_model_menu_action` is linked to the action `test_model_action`,
+    and the action is linked to the model `test_model`. -->
+<menuitem id="test_model_menu_action" action="test_model_action"/>
+```
+
+The action here is link between the menu and the model (`menu -> action -> model`).
+
+There are three levels of menus:
+1. The root menu, displayed in App switcher
+2. The first level menu, displayed in the top bar
+3. The action menus
+
+For example:
+```xml
+<menuitem id="test_menu_root" name="Test">
+    <menuitem id="test_first_level_menu" name="First Level">
+        <menuitem id="test_model_menu_action" action="test_model_action"/>
+    </menuitem>
+</menuitem>
+```
+
+## Fields, Attributes And View
+Documentation: [Fields](https://www.odoo.com/documentation/16.0/developer/reference/backend/orm.html#fields)
+
+Some examples of the view fine-tunings:
+* some fields have a default value
+* some fields are read-only
+* some fields are not copied when duplicating the record
+
+## Reserved Fields
+Documentation: [Reserved Field names](https://www.odoo.com/documentation/16.0/developer/reference/backend/orm.html#reference-orm-fields-reserved)
+
+A few field names are reserved for pre-defined behavior.
+They should be defined on a model when the related behavior is desired:
+* `name`
+* `active` - toggles the global visibility of the record
+* `state` - lifecycle stages of the object (used by `fields.states` attribute)
+* `parent_id` - used to organize records in a tree structure
+* `parent_path`
+* `company_id` - used for Odoo multi-company behavior
