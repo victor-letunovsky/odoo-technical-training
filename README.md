@@ -202,3 +202,121 @@ They should be defined on a model when the related behavior is desired:
 * `parent_id` - used to organize records in a tree structure
 * `parent_path`
 * `company_id` - used for Odoo multi-company behavior
+
+# Basic Views
+Documentation: [Views](https://www.odoo.com/documentation/16.0/developer/reference/backend/views.html)
+
+In practice, the default view (from previous chapter [UI](#UI)) is **never** acceptable for a business application.
+
+Views are defined as `ir.ui.view` model in XML with actions and menus.
+
+In our real estate module we need following views customizations:
+* in the list view we need more fields than just the name.
+* in the form view the fields should be grouped.
+* in the search view search on more fields than just the name.
+
+Basic views structure (placeholders - in caps):
+```xml
+<record id="MODEL_view_TYPE" model="ir.ui.view">
+  <field name="name">NAME</field>
+  <field name="model">MODEL</field>
+  <field name="arch" type="xml">
+    <VIEW_TYPE>
+      <VIEW_SPECIFICATIONS/>
+    </VIEW_TYPE>
+  </field>
+</record>
+```
+
+## List
+Documentation: [List](https://www.odoo.com/documentation/16.0/developer/reference/backend/views.html#reference-views-list)
+
+List views root element is `<tree>`.
+
+The most basic version of this view simply lists all the fields to display in the table (where each field is a column):
+```xml
+<tree string="Tests">
+    <field name="name"/>
+    <field name="last_seen"/>
+</tree>
+```
+
+## Form
+Documentation: [Form](https://www.odoo.com/documentation/16.0/developer/reference/backend/views.html#reference-views-form)
+
+Root element is `<form>` and its XML is composed of:
+1. high-level structure elements (groups and notebooks)
+2. interactive elements (buttons and fields)
+
+For example:
+```xml
+<form string="Test">
+    <sheet>
+        <group>
+            <group>
+                <field name="name"/>
+            </group>
+            <group>
+                <field name="last_seen"/>
+            </group>
+            <notebook>
+                <page string="Description">
+                    <field name="description"/>
+                </page>
+            </notebook>
+        </group>
+    </sheet>
+</form>
+```
+
+It is possible to use regular HTML tags such as `div` and `h1` as well as the `class` attribute (Odoo provides some built-in classes) to fine-tune the look.
+
+[A simple example](https://github.com/odoo/odoo/blob/6da14a3aadeb3efc40f145f6c11fc33314b2f15e/addons/crm/views/crm_lost_reason_views.xml#L16-L44)
+
+## Search
+Documentation: [Search](https://www.odoo.com/documentation/16.0/developer/reference/backend/views.html#reference-views-search)
+
+Root element is `<search>`, its most basic version lists necessary fields:
+```xml
+<search string="Tests">
+    <field name="name"/>
+    <field name="last_seen"/>
+</search>
+```
+
+Search views can also contain `<filter>` elements, which act as toggles for predefined searches.
+Filters must have one of the following attributes:
+* `domain`: adds the given domain to the current search
+* `context`: adds some context to the current search; uses the key `group_by` to group results on the given field name
+
+[A simple example](https://github.com/odoo/odoo/blob/715a24333bf000d5d98b9ede5155d3af32de067c/addons/delivery/views/delivery_view.xml#L30-L44)
+
+## Domains
+Documentation: [Search domains](https://www.odoo.com/documentation/16.0/developer/reference/backend/orm.html#reference-orm-domains)
+
+Domain encodes conditions on records. Domain is a list of criteria used to select a subset of a model’s records.
+
+Each criterion is a triplet with a _field name_, an _operator_ and a _value_.
+
+Example one:
+```javascript
+[('product_type', '=', 'service'), ('unit_price', '>', 1000)]
+```
+
+Example two:
+```javascript
+['|',
+    ('product_type', '=', 'service'),
+    '!', '&',
+        ('unit_price', '>=', 1000),
+        ('unit_price', '<', 2000)]
+```
+
+> **Notes** \
+> XML does not allow `<` and `&` to be used inside XML elements. \
+> To avoid parsing errors, entity references should be used:
+> * `&lt;` for `<`
+> * `&amp;` for `&`
+> * `&gt;` for `>`
+> * `&apos;` for `'`
+> * `&quot;` for `"`
