@@ -56,3 +56,8 @@ class EstateProperty(models.Model):
                                                         ('accepted', 'Offer Accepted'), ('sold', 'Sold'),
                                                         ('canceled', 'Canceled')],
                              required=True, default='new', copy=False)
+    buyer = fields.Many2one('res.partner', string='Buyer', copy=False)
+
+    # `self.env.user` is the current user's record
+    salesperson = fields.Many2one('res.users', string='Salesman', default=lambda self: self.env.user)
+
