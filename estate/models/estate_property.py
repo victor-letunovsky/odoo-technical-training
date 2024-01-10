@@ -35,6 +35,7 @@ class EstateProperty(models.Model):
     """
 
     name = fields.Char('Title', required=True)    # required=True means "NOT NULL" in db
+    property_type_id = fields.Many2one('estate.property.type', 'Property Type')
     description = fields.Text('Description')
     postcode = fields.Char('Postcode')
     date_availability = fields.Date('Available From',

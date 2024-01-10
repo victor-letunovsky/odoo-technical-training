@@ -320,3 +320,25 @@ Example two:
 > * `&gt;` for `>`
 > * `&apos;` for `'`
 > * `&quot;` for `"`
+
+# Relations Between Models
+
+## Many2one
+Documentation: [Many2one](https://www.odoo.com/documentation/16.0/developer/reference/backend/orm.html#odoo.fields.Many2one)
+
+A `many2one` is a simple link to another object.
+For example, in order to define a link to the `res.partner` in our test model, we can write:
+```python
+from odoo import fields
+partner_id = fields.Many2one("res.partner", string="Partner")
+```
+
+By convention, `many2one` fields have the `_id` suffix. Accessing the data in the partner can then be easily done with:
+
+```python
+# noinspection PyUnresolvedReferences
+print(my_test_object.partner_id.name)
+```
+
+> **See also** \
+> [foreign keys](https://www.postgresql.org/docs/12/tutorial-fk.html)
