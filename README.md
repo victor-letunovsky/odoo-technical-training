@@ -351,3 +351,26 @@ print(my_test_object.partner_id.name)
 > * `self.env.context` or `self._context` is the context dictionary
 > * `self.env.ref(xml_id)` returns the record corresponding to an XML id
 > * `self.env[model_name]` returns an instance of the given model
+
+## Many2many
+Documentation: [Many2many](https://www.odoo.com/documentation/16.0/developer/reference/backend/orm.html#odoo.fields.Many2many)
+
+A `many2many` is a bidirectional multiple relationship: any record on one side can be related to any number of records
+on the other side.
+For example, to define a link to the `account.tax` model on our test model:
+```python
+from odoo import fields
+tax_ids = fields.Many2many("account.tax", string="Taxes")
+```
+
+By convention, `many2many` fields have the `_ids` suffix. Accessing the data must be done in a loop:
+
+```python
+# noinspection PyUnresolvedReferences
+for tax in my_test_object.tax_ids:
+    print(tax.name)
+```
+
+A list of records is known as a _recordset_, i.e. an ordered collection of records.
+It supports standard Python operations on collections, such as `len()` and `iter()`,
+plus extra set operations like `recs1 | recs2`.
