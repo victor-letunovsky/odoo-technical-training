@@ -61,3 +61,4 @@ class EstateProperty(models.Model):
     # `self.env.user` is the current user's record
     salesperson = fields.Many2one('res.users', string='Salesman', default=lambda self: self.env.user)
     tag_ids = fields.Many2many('estate.property.tag')
+    offer_ids = fields.One2many('estate.property.offer', inverse_name='property_id')

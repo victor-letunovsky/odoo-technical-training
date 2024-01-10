@@ -7,5 +7,6 @@ https://github.com/odoo/odoo/blob/e80911aaead031e7523173789e946ac1fd27c7dc/addon
 """
 
 from . import estate_property
+from . import estate_property_offer
 from . import estate_property_tag
 from . import estate_property_type

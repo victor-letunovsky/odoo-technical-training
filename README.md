@@ -374,3 +374,29 @@ for tax in my_test_object.tax_ids:
 A list of records is known as a _recordset_, i.e. an ordered collection of records.
 It supports standard Python operations on collections, such as `len()` and `iter()`,
 plus extra set operations like `recs1 | recs2`.
+
+## One2many
+Documentation: [One2many](https://www.odoo.com/documentation/16.0/developer/reference/backend/orm.html#odoo.fields.One2many)
+
+`one2many` is the inverse of a `many2one`. For example, we defined on our test model a link to the `res.partner` model
+thanks to the field `partner_id`. We can define the inverse relation,
+i.e. the list of test models linked to our partner:
+```python
+from odoo import fields
+# The first parameter is called the comodel and the second parameter is the field we want to inverse.
+test_ids = fields.One2many("test_model", "partner_id", string="Tests")
+```
+
+By convention, `one2many` fields have the `_ids` suffix.
+They behave as a list of records, meaning that accessing the data must be done in a loop:
+
+```python
+# noinspection PyUnresolvedReferences
+for test in partner.test_ids:
+    print(test.name)
+```
+
+> **Danger** \
+> Because a `One2many` is a virtual relationship, there must be a `Many2one` field defined in the comodel.
+
+We don’t need an action or a menu for all models. Some models are intended to be accessed only through another model.

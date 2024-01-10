@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<odoo>
+    <!--
+    We don’t need an action or a menu for 'estate.property.offer' model.
+    Some models are intended to be accessed only through another model.
+    An offer is always accessed through a property.
+    -->
+
+    <!--
+    Despite the fact that the property_id field is required, we did not include it in the views.
+    How does Odoo know which property our offer is linked to?
+    Well that’s part of the magic of using the Odoo framework: sometimes things are defined implicitly.
+    When we create a record through a one2many field, the corresponding many2one is populated automatically for convenience.
+    -->
+
+    <record id="estate_property_offer_view_tree" model="ir.ui.view">
+        <field name="name">estate.property.offer.tree</field>
+        <field name="model">estate.property.offer</field>
+        <field name="arch" type="xml">
+            <tree string="Property Offers">
+                <field name="price"/>
+                <field name="partner_id"/>
+                <field name="status"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="estate_property_offer_view_form" model="ir.ui.view">
+        <field name="name">estate.property.offer.form</field>
+        <field name="model">estate.property.offer</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="price"/>
+                    <field name="partner_id"/>
+                    <field name="status"/>
+                </group>
+            </form>
+        </field>
+    </record>
+</odoo>
