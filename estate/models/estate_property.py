@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class EstateProperty(models.Model):
@@ -51,6 +51,7 @@ class EstateProperty(models.Model):
     garden_orientation = fields.Selection(string='Garden Orientation',
         selection=[('n', 'North'), ('s', 'South'), ('e', 'East'), ('w', 'West')],
         help='Geographical garden orientation')
+    total_area = fields.Integer('Total Area (sqm)', compute='_compute_total_area')
     active = fields.Boolean('Active', default=True)
     state = fields.Selection(string='Status', selection=[('new', 'New'), ('received', 'Offer Received'),
                                                         ('accepted', 'Offer Accepted'), ('sold', 'Sold'),
@@ -62,3 +63,14 @@ class EstateProperty(models.Model):
     salesperson = fields.Many2one('res.users', string='Salesman', default=lambda self: self.env.user)
     tag_ids = fields.Many2many('estate.property.tag')
     offer_ids = fields.One2many('estate.property.offer', inverse_name='property_id')
+    best_price = fields.Float('Best Offer', compute='_compute_best_price')
+
+    @api.depends('living_area', 'garden_area')
+    def _compute_total_area(self):
+        for record in self:
+            record.total_area = record.living_area + record.garden_area
+
+    @api.depends('offer_ids.price')
+    def _compute_best_price(self):
+        for record in self:
+            record.best_price = max(record.offer_ids.mapped('price')) if record.offer_ids else 0

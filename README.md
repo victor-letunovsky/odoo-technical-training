@@ -400,3 +400,122 @@ for test in partner.test_ids:
 > Because a `One2many` is a virtual relationship, there must be a `Many2one` field defined in the comodel.
 
 We don’t need an action or a menu for all models. Some models are intended to be accessed only through another model.
+
+# Computed Fields And Onchanges
+Sometimes the value of one field is determined from the values of other fields and other times we want to help
+the user with data entry.
+These cases are supported by the concepts of computed fields and onchanges.
+
+## Computed Fields
+Documentation: [Computed Fields](https://www.odoo.com/documentation/16.0/developer/reference/backend/orm.html#reference-fields-compute)
+
+To create a computed field, create a field and set its attribute `compute` to the name of a method.
+The computation method should set the value of the computed field for every record in `self`.
+
+By convention, `compute` methods are private, meaning that they cannot be called from the presentation tier,
+only from the business tier. Private methods have a name starting with an underscore `_`.
+
+Computed fields are _read-only_ by default.
+
+### Dependencies
+The value of a computed field usually depends on the values of other fields in the computed record.
+The ORM expects the developer to specify those dependencies on the compute method with the
+decorator [depends()](https://www.odoo.com/documentation/16.0/developer/reference/backend/orm.html#odoo.api.depends).
+The given dependencies are used by the ORM to trigger the recomputation of the field whenever some
+of its dependencies have been modified:
+
+```python
+from odoo import api, fields, models
+
+class TestComputed(models.Model):
+    _name = "test.computed"
+
+    total = fields.Float(compute="_compute_total")
+    amount = fields.Float()
+
+    @api.depends("amount")
+    def _compute_total(self):
+        for record in self:
+            record.total = 2.0 * record.amount
+```
+
+> **Note** \
+> `self` is a collection. \
+> The object `self` is a _recordset_, i.e. an ordered collection of records.
+> It supports the standard Python operations on collections, e.g. `len(self)` and `iter(self)`,
+> plus extra set operations such as `recs1 | recs2`. \
+> Iterating over `self` gives the records one by one, where each record is itself a collection of size 1.
+> You can access/assign fields on single records by using the dot notation, e.g. `record.name`.
+
+Many examples of computed fields [can be found](https://github.com/odoo/odoo/blob/713dd3777ca0ce9d121d5162a3d63de3237509f4/addons/account/models/account_move.py#L3420-L3423) in Odoo.
+
+For relational fields (`many2one`, `many2many`, `one2many`) it’s possible to use paths through a field as a dependency:
+```python
+from odoo import api, fields
+
+description = fields.Char(compute="_compute_description")
+partner_id = fields.Many2one("res.partner")
+
+@api.depends("partner_id.name")
+def _compute_description(self):
+    for record in self:
+        record.description = "Test for partner %s" % record.partner_id.name
+```
+
+### Inverse Function
+Computed fields are read-only by default.
+
+To allow modification of computed field or dependent field with one impacting the other there is `inverse` function.
+For example:
+```python
+from odoo import api, fields, models
+
+class TestComputed(models.Model):
+    _name = "test.computed"
+
+    total = fields.Float(compute="_compute_total", inverse="_inverse_total")
+    amount = fields.Float()
+
+    @api.depends("amount")
+    def _compute_total(self):
+        for record in self:
+            record.total = 2.0 * record.amount
+
+    def _inverse_total(self):
+        for record in self:
+            record.amount = record.total / 2.0
+```
+
+[One more example](https://github.com/odoo/odoo/blob/2ccf0bd0dcb2e232ee894f07f24fdc26c51835f7/addons/crm/models/crm_lead.py#L308-L317)
+
+A `compute` method sets the field while an `inverse` method sets the field’s dependencies.
+
+Note that the `inverse` method is called when saving the record, while the `compute` method is called at each change of its dependencies.
+
+Computed fields are not stored in the database by default.
+Therefore, it is not possible to search on a computed field unless a search method is defined.
+An example can be found [here](https://github.com/odoo/odoo/blob/f011c9aacf3a3010c436d4e4f408cd9ae265de1b/addons/event/models/event_event.py#L188).
+
+Another solution is to store the field with the store=True attribute.
+While this is usually convenient, pay attention to the potential computation load added to your model.
+```python
+from odoo import api, fields
+
+description = fields.Char(compute="_compute_description", store=True)
+partner_id = fields.Many2one("res.partner")
+
+@api.depends("partner_id.name")
+def _compute_description(self):
+    for record in self:
+        record.description = "Test for partner %s" % record.partner_id.name
+```
+
+Every time the partner name is changed, the description is automatically recomputed for **all the records** referring to it!
+This can quickly become prohibitive to recompute when millions of records need recomputation.
+
+It is also worth noting that a computed field can depend on another computed field.
+The ORM is smart enough to correctly recompute all the dependencies in the right order…
+but sometimes at the cost of degraded performance.
+
+## Onchanges
+Documentation: [onchange()](https://www.odoo.com/documentation/16.0/developer/reference/backend/orm.html#odoo.api.onchange)
