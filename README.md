@@ -519,3 +519,51 @@ but sometimes at the cost of degraded performance.
 
 ## Onchanges
 Documentation: [onchange()](https://www.odoo.com/documentation/16.0/developer/reference/backend/orm.html#odoo.api.onchange)
+
+The _onchange_ mechanism provides a way for the client interface to update a form without saving anything
+to the database whenever the user has filled in a field value.
+To achieve this, we define a method where self represents the record in the form view and decorate it with
+[`@api.onchange()`](https://www.odoo.com/documentation/16.0/developer/reference/backend/orm.html#odoo.api.onchange)
+to specify which field it is triggered by.
+Any change you make on self will be reflected on the form:
+```python
+from odoo import api, fields, models
+
+
+class TestOnchange(models.Model):
+    _name = "test.onchange"
+
+    name = fields.Char(string="Name")
+    description = fields.Char(string="Description")
+    partner_id = fields.Many2one("res.partner", string="Partner")
+
+    @api.onchange("partner_id")
+    def _onchange_partner_id(self):
+        """
+        Note: we do not loop on self, this is because the method is only triggered in a form view,
+        where self is always a single record.
+        """
+        self.name = "Document for %s" % self.partner_id.name
+        self.description = "Default description for %s" % self.partner_id.name
+```
+In this example, changing the partner will also change the name and the description values.
+It is up to the user whether to change the name and description values afterward.
+Also note that we do not loop on self, this is because the method is only triggered in a form view, where self is always a single record.
+
+## Resume about computed fields and onchanges
+Always prefer computed fields since they are also triggered outside the context of a form view.
+Never ever use an onchange to add business logic to your model.
+This is a very **bad idea** since onchanges are not automatically triggered when creating a record programmatically;
+they are only triggered in the form view.
+
+Computed fields tend to be easier to debug: such a field is set by a given method, so it’s easy to track when the value is set.
+Onchanges, on the other hand, may be confusing: it is very difficult to know the extent of an onchange.
+Since several onchange methods may set the same fields, it easily becomes difficult to track where a value is coming from.
+
+> **Note** \
+> Prefer _computed fields_ over the _onchanges_
+
+When using stored computed fields, pay close attention to the dependencies.
+When computed fields depend on other computed fields, changing a value can trigger a large number of recomputations.
+This leads to poor performance.
+
