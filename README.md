@@ -613,3 +613,28 @@ class TestAction(models.Model):
 
 Another good example is this [button in a view](https://github.com/odoo/odoo/blob/cd9af815ba591935cda367d33a1d090f248dd18d/addons/crm/views/crm_lead_views.xml#L9-L11)
 and its [corresponding Python method](https://github.com/odoo/odoo/blob/cd9af815ba591935cda367d33a1d090f248dd18d/addons/crm/models/crm_lead.py#L746-L760)
+
+To link an action to a button use `type="action"` and refer to the external identifier of acton in the name.
+```xml
+<button type="action" name="%(test.test_model_action)d" string="My Action"/>
+```
+
+# Constraints
+One of purposes of constraints is to prevent users from entering incorrect data.
+For example prevent users from setting negative price.
+
+Odoo provides two ways to set up automatically verified invariants:
+1. [Python constraints](https://www.odoo.com/documentation/16.0/developer/reference/backend/orm.html#odoo.api.constrains) and 
+2. SQL constraints.
+
+## SQL
+Documentation: [Models](https://www.odoo.com/documentation/16.0/developer/reference/backend/orm.html#reference-orm-models)
+and [PostgreSQL’s documentation](https://www.postgresql.org/docs/12/ddl-constraints.html)
+
+SQL constraints are defined through the model attribute `_sql_constraints`.
+This attribute is assigned a list of triples containing strings `(name, sql_definition, message)`, where:
+1. `name` is a valid SQL constraint name
+2. `sql_definition` is a [table_constraint](https://www.postgresql.org/docs/12/ddl-constraints.html) expression
+3. `message` is the error message
+
+You can find a simple example [here](https://github.com/odoo/odoo/blob/24b0b6f07f65b6151d1d06150e376320a44fd20a/addons/analytic/models/analytic_account.py#L20-L23).

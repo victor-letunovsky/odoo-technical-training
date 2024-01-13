@@ -9,3 +9,7 @@ class EstatePropertyType(models.Model):
                     'We need type to categorize properties and refine filtering.')
 
     name = fields.Char('Name', required=True)
+
+    _sql_constraints = [
+        ('check_name_is_unique', 'UNIQUE(name)', 'A property type name must be unique')
+    ]
