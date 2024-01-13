@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from odoo import api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
+from odoo.tools.float_utils import float_compare, float_is_zero
 
 
 class EstateProperty(models.Model):
@@ -99,6 +100,14 @@ class EstateProperty(models.Model):
                 'title': 'Info',
                 'message': 'Clear garden area and orientation',
                 'type': 'notification'}}  # Remove 'type' to show message as a dialog
+
+    @api.constrains('selling_price', 'expected_price')
+    def _check_selling_price(self):
+        for record in self:
+            if ((not float_is_zero(record.selling_price, precision_digits=2))
+                    and (float_compare(record.expected_price * .9, record.selling_price, precision_digits=2) == 1)):
+                raise ValidationError('The selling price must be at least 90% of the expected price! '
+                                      'You must reduce the expected price if you want to accept the offer.')
 
     def action_sold_property(self):
         for record in self:

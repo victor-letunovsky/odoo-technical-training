@@ -638,3 +638,30 @@ This attribute is assigned a list of triples containing strings `(name, sql_defi
 3. `message` is the error message
 
 You can find a simple example [here](https://github.com/odoo/odoo/blob/24b0b6f07f65b6151d1d06150e376320a44fd20a/addons/analytic/models/analytic_account.py#L20-L23).
+
+## Python
+Documentation: [constrains()](https://www.odoo.com/documentation/16.0/developer/reference/backend/orm.html#odoo.api.constrains)
+
+Python constraints are necessary to make more complex checks which require Python code.
+
+A Python constraint is defined as a method decorated with [`@api.constrains`](https://www.odoo.com/documentation/16.0/developer/reference/backend/orm.html#odoo.api.constrains)
+and is invoked on a recordset.
+The decorator specifies which fields are involved in the constraint.
+The constraint is automatically evaluated when any of these fields are modified.
+The method should raise an exception (usually `ValidationError`) if its invariant is not satisfied:
+```python
+from odoo import api, fields
+from odoo.exceptions import ValidationError
+
+@api.constrains('date_end')
+def _check_date_end(self):
+    for record in self:
+        if record.date_end < fields.Date.today():
+            raise ValidationError("The end date cannot be set in the past")
+    # all records passed the test, don't return anything
+```
+
+A simple example can be found [here](https://github.com/odoo/odoo/blob/274dd3bf503e1b612179db92e410b336bfaecfb4/addons/stock/models/stock_quant.py#L239-L244).
+
+SQL constraints are usually more efficient than Python constraints.
+When performance matters, always prefer SQL to Python constraints.
