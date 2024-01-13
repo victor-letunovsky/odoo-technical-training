@@ -665,3 +665,50 @@ A simple example can be found [here](https://github.com/odoo/odoo/blob/274dd3bf5
 
 SQL constraints are usually more efficient than Python constraints.
 When performance matters, always prefer SQL to Python constraints.
+
+# Add The Sprinkles
+Documentation: [Views](https://www.odoo.com/documentation/16.0/developer/reference/backend/views.html#reference-views)
+
+## Inline Views
+In some cases we want to define a specific list view which is only used in the context of a form view.
+For example, we would like to display the list of properties linked to a property type.
+However, we only want to display 3 fields for clarity: `name`, `expected price` and `state`.
+
+To do this, we can define _inline_ list views. An inline list view is defined directly inside a form view.
+For example:
+```python
+from odoo import fields, models
+
+class TestModel(models.Model):
+    _name = "test_model"
+    _description = "Test Model"
+
+    description = fields.Char()
+    line_ids = fields.One2many("test_model_line", "model_id")
+
+
+class TestModelLine(models.Model):
+    _name = "test_model_line"
+    _description = "Test Model Line"
+
+    model_id = fields.Many2one("test_model")
+    field_1 = fields.Char()
+    field_2 = fields.Char()
+    field_3 = fields.Char()
+```
+
+```xml
+<form>
+    <field name="description"/>
+    <field name="line_ids">
+        <tree>
+            <field name="field_1"/>
+            <field name="field_2"/>
+        </tree>
+    </field>
+</form>
+```
+
+In the form view of the `test_model`, we define a specific list view for `test_model_line` with fields `field_1` and `field_2`.
+
+An example can be found [here](https://github.com/odoo/odoo/blob/0e12fa135882cd5095dbf15fe2f64231c6a84336/addons/event/views/event_tag_views.xml#L27-L33).
