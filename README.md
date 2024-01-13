@@ -567,3 +567,49 @@ When using stored computed fields, pay close attention to the dependencies.
 When computed fields depend on other computed fields, changing a value can trigger a large number of recomputations.
 This leads to poor performance.
 
+# Action
+Documentation: [Actions](https://www.odoo.com/documentation/16.0/developer/reference/backend/actions.html#reference-actions)
+and [Error management](https://www.odoo.com/documentation/16.0/developer/reference/backend/orm.html#reference-exceptions)
+
+For example, to link business logic with a button in common way is:
+
+1> Add a button in the view, e.g. in the `header` of the view:
+```xml
+<form>
+    <header>
+        <!--
+        By assigning type="object" to our button, the Odoo framework will execute a Python method
+        with name="action_do_something" on the given model.
+        -->
+        <button name="action_do_something" type="object" string="Do Something"/>
+    </header>
+    <sheet>
+        <field name="name"/>
+    </sheet>
+</form>
+```
+2> And link this button to business logic:
+```python
+from odoo import fields, models
+
+class TestAction(models.Model):
+    _name = "test.action"
+
+    name = fields.Char()
+
+    def action_do_something(self):
+        """
+        Note 1: this method isn’t prefixed with an underscore (_), thus it is public and can be called directly from
+                the Odoo interface (through an RPC call).
+        Note 2: you should always define your methods as private unless they need to be called from the user interface.
+        Note 3: we loop on 'self'. Always assume that a method can be called on multiple records; for re-usability.
+        Note 4: public method always return something so that it can be called through XML-RPC.
+                When in doubt, just return true.
+        """
+        for record in self:
+            record.name = "Something"
+        return True
+```
+
+Another good example is this [button in a view](https://github.com/odoo/odoo/blob/cd9af815ba591935cda367d33a1d090f248dd18d/addons/crm/views/crm_lead_views.xml#L9-L11)
+and its [corresponding Python method](https://github.com/odoo/odoo/blob/cd9af815ba591935cda367d33a1d090f248dd18d/addons/crm/models/crm_lead.py#L746-L760)

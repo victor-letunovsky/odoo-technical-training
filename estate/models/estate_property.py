@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import api, fields, models
+from odoo.exceptions import UserError
 
 
 class EstateProperty(models.Model):
@@ -91,3 +92,21 @@ class EstateProperty(models.Model):
                 'title': 'Info',
                 'message': 'Clear garden area and orientation',
                 'type': 'notification'}}  # Remove 'type' to show message as a dialog
+
+    def action_sold_property(self):
+        for record in self:
+            if record.state == 'sold':
+                raise UserError('Estate property "%s" is already sold.' % record.name)
+            elif record.state == 'canceled':
+                raise UserError('Canceled estate properties cannot be sold.')
+            else:
+                record.state = 'sold'
+
+    def action_cancel_property(self):
+        for record in self:
+            if record.state == 'canceled':
+                raise UserError('Estate property "%s" is already cancelled.' % record.name)
+            elif record.state == 'sold':
+                raise UserError('Sold estate properties cannot be canceled.')
+            else:
+                record.state = 'canceled'
