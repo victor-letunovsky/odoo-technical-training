@@ -64,7 +64,12 @@ class EstateProperty(models.Model):
     # `self.env.user` is the current user's record
     salesperson = fields.Many2one('res.users', string='Salesman', default=lambda self: self.env.user)
     tag_ids = fields.Many2many('estate.property.tag')
-    offer_ids = fields.One2many('estate.property.offer', inverse_name='property_id')
+
+    # In One2many field first parameter is co-model of relationship
+    # and the second parameter is the field we want to inverse from co-model.
+    # Both are mandatory except in the case of related fields or field extensions.
+    offer_ids = fields.One2many('estate.property.offer', 'property_id')
+
     best_price = fields.Float('Best Offer', compute='_compute_best_price')
 
     _sql_constraints = [
