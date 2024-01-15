@@ -712,3 +712,21 @@ class TestModelLine(models.Model):
 In the form view of the `test_model`, we define a specific list view for `test_model_line` with fields `field_1` and `field_2`.
 
 An example can be found [here](https://github.com/odoo/odoo/blob/0e12fa135882cd5095dbf15fe2f64231c6a84336/addons/event/views/event_tag_views.xml#L27-L33).
+
+## Widgets
+Documentation: [Field Widgets](https://www.odoo.com/documentation/16.0/developer/reference/frontend/javascript_reference.html#reference-js-widgets)
+
+Widget is about how fields would look in UI.
+Odoo chooses the right ‘widget’ depending on the field type.
+
+However, in some cases, we want a specific representation of a field which can be done thanks to the `widget` attribute.
+(Search for `"widget"` within estate module views for some examples).
+
+Each field type has a set of widgets which can be used to fine tune its display.
+Some widgets also take extra options.
+An exhaustive list can be found in [Field Widgets](https://www.odoo.com/documentation/16.0/developer/reference/frontend/javascript_reference.html#reference-js-widgets).
+
+[Another good example](https://github.com/odoo/odoo/blob/0e12fa135882cd5095dbf15fe2f64231c6a84336/addons/account/views/account_bank_statement_views.xml#L136) of `statusbar` widget.
+
+> **Warning** \
+> Add a field only **once** to a list or a form view. Adding it multiple times is not supported.
