@@ -7,6 +7,7 @@ class EstatePropertyType(models.Model):
     _name = 'estate.property.type'
     _description = ('A property type is, for example, a house or an apartment.'
                     'We need type to categorize properties and refine filtering.')
+    _order = 'name'
 
     name = fields.Char('Name', required=True)
     property_ids = fields.One2many('estate.property', 'property_type_id')

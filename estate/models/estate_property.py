@@ -11,6 +11,7 @@ class EstateProperty(models.Model):
     """
     _name = 'estate.property'
     _description = 'Model summarizes information about real estate property'
+    _order = 'id desc'
 
     # Below there are model fields
     # Related docs: https://www.odoo.com/documentation/16.0/developer/reference/backend/orm.html#reference-orm-fields

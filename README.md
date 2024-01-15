@@ -730,3 +730,25 @@ An exhaustive list can be found in [Field Widgets](https://www.odoo.com/document
 
 > **Warning** \
 > Add a field only **once** to a list or a form view. Adding it multiple times is not supported.
+
+## List Order
+Documentation: [Models](https://www.odoo.com/documentation/16.0/developer/reference/backend/orm.html#reference-orm-models)
+
+By default, the records are retrieved in a non-deterministic order depending on PostgreSQL.
+
+Odoo provides several ways to set a default order.
+The most common way is to define the `_order` attribute directly in the model.
+
+The `_order` attribute takes a string containing a list of fields which will be used for sorting.
+It will be converted to an [order_by](https://www.postgresql.org/docs/12/queries-order.html) clause in SQL.
+For example:
+```python
+from odoo import fields, models
+
+class TestModel(models.Model):
+    _name = "test_model"
+    _description = "Test Model"
+    _order = "id desc"
+
+    description = fields.Char()
+```
