@@ -737,6 +737,9 @@ Documentation: [Models](https://www.odoo.com/documentation/16.0/developer/refere
 By default, the records are retrieved in a non-deterministic order depending on PostgreSQL.
 
 Odoo provides several ways to set a default order.
+
+### `_order` field of model
+
 The most common way is to define the `_order` attribute directly in the model.
 
 The `_order` attribute takes a string containing a list of fields which will be used for sorting.
@@ -751,4 +754,33 @@ class TestModel(models.Model):
     _order = "id desc"
 
     description = fields.Char()
+```
+
+`_order` field way of ordering has the advantage of a consistent order everywhere a list of records is retrieved.
+
+### `_default_order` attribute of `<tree>` view
+It is also possible to define a specific order directly in a view thanks to the `default_order` attribute
+([Example](https://github.com/odoo/odoo/blob/892dd6860733c46caf379fd36f57219082331b66/addons/crm/report/crm_activity_report_views.xml#L30))
+```xml
+<tree default_order="date desc">...</tree>
+```
+
+### Manual
+Manual order by drag the record up and down in the list.
+
+To do so, a `sequence` field is used in combination with the `handle` widget.
+Obviously the `sequence` field must be the first field in the `_order` attribute.
+
+For example:
+```python
+from odoo import fields
+...
+_order = 'sequence, name'
+sequence = fields.Integer('Sequence', default=1, help="Used to order property types.")
+```
+```xml
+<tree string="Property Types">
+    <field name="sequence" widget="handle"/>
+    <field name="name"/>
+</tree>
 ```
