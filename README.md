@@ -784,3 +784,53 @@ sequence = fields.Integer('Sequence', default=1, help="Used to order property ty
     <field name="name"/>
 </tree>
 ```
+
+## Attributes and options
+
+### Prevent inline `Many2one` item creation and editing
+Documentation: [widget `many2one (FieldMany2One)`](https://www.odoo.com/documentation/16.0/developer/reference/frontend/javascript_reference.html#relational-fields)
+```xml
+<field name="property_type_id" options="{'no_create': True}"/>
+```
+
+### Tags color
+Documentation: [widget `many2many_tags (FieldMany2ManyTags)`](https://www.odoo.com/documentation/16.0/developer/reference/frontend/javascript_reference.html#relational-fields)
+
+To give tags a color:\
+1> Add `color` field to model.
+```python
+from odoo import fields
+color = fields.Integer()
+```
+2> Add `color_field` option to `Many2many` field:
+```xml
+<field name="tag_ids" widget="many2many_tags" string="Tags" options="{'color_field': 'color'}"/>
+```
+
+### Show buttons for specific states
+Documentation: [`states` attr of `<button>`](https://www.odoo.com/documentation/16.0/developer/reference/backend/views.html#list)
+
+A `state` field is used in combination with a `states` attribute in the view to display buttons conditionally.
+For example:
+```xml
+<button name="action_sold_property" type="object" string="Sold" states="new,received,accepted"/>
+```
+
+### `invisible` option and attribute
+It is possible to make a field `invisible`, `readonly` or `required` based on the value of other fields thanks
+to the `attrs` attribute.
+
+Note that `invisible` can also be applied to other elements of the view such as `button` or `group`.
+
+The `attrs` is a dictionary with the property as a key and a domain as a value:
+```xml
+<form>
+    <!--
+        The `description` field is invisible when `is_partner` is `False`.
+        It is important to note that a field used in an `attrs` **must** be present in the view.
+        If it should not be displayed to the user, we can use the `invisible` attribute to hide it.
+    -->
+    <field name="description" attrs="{'invisible': [('is_partner', '=', False)]}"/>
+    <field name="is_partner" invisible="1"/>
+</form>
+```
