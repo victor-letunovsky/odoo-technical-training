@@ -10,7 +10,11 @@
         <field name="name">estate.property.tree</field>
         <field name="model">estate.property</field>
         <field name="arch" type="xml">
-            <tree string="Properties">
+            <!-- TODO: decoration-bf somehow doesn't work. Figure out why. -->
+            <tree string="Properties"
+                  decoration-bf="state == 'accepted'"
+                  decoration-success="state in ('received','accepted')"
+                  decoration-muted="state == 'sold'">
                 <field name="name"/>
                 <field name="property_type_id"/>
                 <field name="postcode"/>
@@ -18,7 +22,8 @@
                 <field name="living_area"/>
                 <field name="expected_price"/>
                 <field name="selling_price"/>
-                <field name="date_availability"/>
+                <field name="date_availability" optional="hide"/>
+                <field name="state" invisible="1"/>
             </tree>
         </field>
     </record>
@@ -64,23 +69,25 @@
                                 <field name="facades"/>
                                 <field name="garage"/>
                                 <field name="garden"/>
-                                <field name="garden_area"/>
-                                <field name="garden_orientation"/>
+                                <field name="garden_area" attrs="{'invisible': [('garden', '=', False)]}"/>
+                                <field name="garden_orientation" attrs="{'invisible': [('garden', '=', False)]}"/>
                                 <field name="total_area"/>
                                 <field name="active"/>
                             </group>
                         </page>
                         <page string="Offers">
                             <group>
-                                <field name="offer_ids" string="">
-                                    <tree>
+                                <field name="offer_ids" string="" attrs="{'readonly':[('state', 'in', ['accepted', 'sold', 'canceled'])]}">
+                                    <tree editable="bottom" decoration-danger="status == 'refused'" decoration-success="status == 'accepted'">
                                         <field name="price"/>
                                         <field name="partner_id"/>
                                         <field name="validity"/>
                                         <field name="date_deadline"/>
-                                        <button name="action_accept_offer" type="object" string=" " help="Accept" icon="fa-check"/>
-                                        <button name="action_refuse_offer" type="object" string=" " help="Refuse" icon="fa-close"/>
-                                        <field name="status"/>
+                                        <button name="action_accept_offer" type="object" string=" " help="Accept" icon="fa-check" attrs="{'invisible': [('status', 'in', ('accepted','refused'))]}"/>
+                                        <button name="action_refuse_offer" type="object" string=" " help="Refuse" icon="fa-close" attrs="{'invisible': [('status', 'in', ('accepted','refused'))]}"/>
+                                        <!-- To test the color of the 'Offer Received' and 'Offer Accepted' statuses,
+                                             remove 'invisible="1"' attribute and change status manually. -->
+                                        <field name="status" invisible="1"/>
                                     </tree>
                                 </field>
                             </group>

@@ -834,3 +834,43 @@ The `attrs` is a dictionary with the property as a key and a domain as a value:
     <field name="is_partner" invisible="1"/>
 </form>
 ```
+
+> **Warning**\
+> Using a (conditional) readonly attribute in the view can be useful to prevent data entry errors,
+> but keep in mind that it doesn't provide any level of security!
+> There is no check done server-side, therefore it’s always possible to write on the field through an RPC call.
+
+### Attributes and Options :: List
+When the model only has a few fields, it can be useful to edit records directly through the list view and not have
+to open the form view.
+This can be achieved thanks to the `editable` attribute:
+```xml
+<tree editable="bottom">...</tree>
+```
+
+When a model has a lot of fields some of them can be optionally hidden to fit into the list using `optional` attribute
+([documentation](https://www.odoo.com/documentation/16.0/developer/reference/backend/views.html#list)):
+```xml
+<field name="date_availability" optional="hide"/>
+```
+
+Color codes are useful to visually emphasize records:
+[Decorations](https://www.odoo.com/documentation/16.0/developer/reference/frontend/javascript_reference.html#decorations)
+```xml
+<field name="state" decoration-danger="amount &lt; 10000"/>
+```
+```xml
+<!-- The records where `is_partner` is `True` will be displayed in green. -->
+<tree decoration-success="is_partner==True">
+    <field name="name"/>
+    <field name="is_partner" invisible="1"/>
+</tree>
+```
+
+> **Warning**\
+> Keep in mind that **all** fields used in attributes must be in the view!
+
+### Attributes and Options :: Search
+Documentation:
+[Search](https://www.odoo.com/documentation/16.0/developer/reference/backend/views.html#reference-views-search) and
+[Search defaults](https://www.odoo.com/documentation/16.0/developer/reference/backend/views.html#reference-views-search-defaults)
