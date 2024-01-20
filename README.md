@@ -874,3 +874,17 @@ Color codes are useful to visually emphasize records:
 Documentation:
 [Search](https://www.odoo.com/documentation/16.0/developer/reference/backend/views.html#reference-views-search) and
 [Search defaults](https://www.odoo.com/documentation/16.0/developer/reference/backend/views.html#reference-views-search-defaults)
+
+To have filter applied by default it's necessary to use `search_default_{$name}` action context,
+where `{$name}` is the filter name.
+
+Here is an example of an
+[action](https://github.com/odoo/odoo/blob/6decc32a889b46947db6dd4d42ef995935894a2a/addons/crm/report/crm_opportunity_report_views.xml#L115)
+with its
+[corresponding filter](https://github.com/odoo/odoo/blob/6decc32a889b46947db6dd4d42ef995935894a2a/addons/crm/report/crm_opportunity_report_views.xml#L68).
+
+For example:
+```xml
+<!-- Make filter 'filter_available' default -->
+<field name="context">{'search_default_filter_available': True}</field>
+```
