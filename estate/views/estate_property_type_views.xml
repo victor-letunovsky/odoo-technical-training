@@ -22,13 +22,23 @@
         <field name="model">estate.property.type</field>
         <field name="arch" type="xml">
             <form>
+                <header/>
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="%(estate_property_offer_action)d" type="action" class="oe_stat_button" icon="fa-money">
+                            <div class="o_stat_info">
+                                <field name="offer_count" class="o_stat_value"/>
+                                <span class="o_stat_text" attrs="{'invisible': [('offer_count', '&lt;=', 1)]}"> Offers</span>
+                                <span class="o_stat_text" attrs="{'invisible': [('offer_count', '&gt;=', 2)]}"> Offer</span>
+                            </div>
+                        </button>
+                    </div>
                     <div class="oe_title">
                         <h1><field name="name" string=""/></h1>
                     </div>
                     <notebook>
                         <page string="Properties">
-                            <group >
+                            <group>
                                 <field name="property_ids" string="">
                                     <tree string="Properties">
                                         <field name="name"/>

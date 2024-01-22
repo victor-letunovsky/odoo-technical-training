@@ -899,3 +899,31 @@ In the example below, it is used to search on both `name` and `description` fiel
            filter_domain="['|', ('name', 'ilike', self), ('description', 'ilike', self)]"/>
 </search>
 ```
+
+## Stat Buttons
+_Stat Buttons_ are displayed on the top right of a form view and give quick access to linked documents.
+
+Search for some examples in the Odoo codebase for `oe_stat_button`.
+
+Documentation about the concept of [Related fields](https://www.odoo.com/documentation/16.0/developer/reference/backend/orm.html#reference-fields-related).
+
+To understand concept of _Related fields_ consider following example of definition of the `description` field:
+```python
+from odoo import fields
+
+partner_id = fields.Many2one("res.partner", string="Partner")
+description = fields.Char(related="partner_id.name")
+```
+is equivalent to:
+```python
+from odoo import fields, api
+
+partner_id = fields.Many2one("res.partner", string="Partner")
+description = fields.Char(compute="_compute_description")
+
+@api.depends("partner_id.name")
+def _compute_description(self):
+    for record in self:
+        record.description = record.partner_id.name
+```
+Every time the partner name is changed, the description is modified.
