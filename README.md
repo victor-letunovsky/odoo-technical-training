@@ -888,3 +888,14 @@ For example:
 <!-- Make filter 'filter_available' default -->
 <field name="context">{'search_default_filter_available': True}</field>
 ```
+
+Search view `<field>` elements can have a `filter_domain` that overrides the domain generated for searching
+on the given field.
+In the given domain, `self` represents the value entered by the user.
+In the example below, it is used to search on both `name` and `description` fields.
+```xml
+<search string="Test">
+    <field name="description" string="Name and description"
+           filter_domain="['|', ('name', 'ilike', self), ('description', 'ilike', self)]"/>
+</search>
+```

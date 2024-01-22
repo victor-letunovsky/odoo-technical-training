@@ -115,11 +115,11 @@
                 <field name="postcode"/>
                 <field name="expected_price"/>
                 <field name="bedrooms"/>
-                <field name="living_area"/>
+                <field name="living_area" filter_domain="[('living_area', '>=', self)]"/>  <!-- `self` represents the value entered by the user -->
                 <field name="facades"/>
                 <filter name="filter_available" string="Available" domain="[('state', 'in', ['new', 'received'])]"/>
-                <filter name="active" string="Inactive" domain="[('active', '=', False)]"/>
-                <filter name="active" string="Include Inactive" domain="[('active', 'in', [False, True])]"/>
+                <filter name="inactive" string="Inactive" domain="[('active', '=', False)]"/>
+                <filter name="include_inactive" string="Include Inactive" domain="[('active', 'in', [False, True])]"/>
                 <filter name="groupby_postcode" string="Postcode" context="{'group_by': 'postcode'}"/>
             </search>
         </field>
