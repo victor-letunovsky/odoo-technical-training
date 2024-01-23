@@ -60,6 +60,8 @@ class EstateProperty(models.Model):
                                                         ('accepted', 'Offer Accepted'), ('sold', 'Sold'),
                                                         ('canceled', 'Canceled')],
                              required=True, default='new', copy=False)
+    # available computed field should be stored (store=True) in order to filter in view.
+    available = fields.Boolean('Available', compute='_compute_available', store=True)
     buyer = fields.Many2one('res.partner', string='Buyer', copy=False)
 
     # `self.env.user` is the current user's record
@@ -89,6 +91,11 @@ class EstateProperty(models.Model):
     def _compute_best_price(self):
         for record in self:
             record.best_price = max(record.offer_ids.mapped('price')) if record.offer_ids else 0
+
+    @api.depends('state')
+    def _compute_available(self):
+        for record in self:
+            record.available = record.state in ['new', 'received']
 
     @api.onchange('garden')
     def _onchange_garden(self):

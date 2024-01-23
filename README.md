@@ -987,5 +987,47 @@ method because the content of the recordset `self` is not relevant in the contex
 >   For example, if the parent method returns a `dict()`, your override must also return a `dict()`.
 
 ## Model Inheritance
+Documentation: [Inheritance and extension](https://www.odoo.com/documentation/16.0/developer/reference/backend/orm.html#reference-orm-inheritance)
+
+A practical example where two fields are added to a model can be found
+[here](https://github.com/odoo/odoo/blob/60e9410e9aa3be4a9db50f6f7534ba31fea3bc29/addons/account_fleet/models/account_move.py#L39-L47).
 
 ## View Inheritance
+Documentation: [Inheritance](https://www.odoo.com/documentation/16.0/developer/reference/backend/views.html#reference-views-inheritance)
+
+An extension view references its parent using the inherit_id field. Instead of a single view, its arch field contains
+a number of xpath elements that select and alter the content of their parent view:
+```xml
+<record id="inherited_model_view_form" model="ir.ui.view">
+    <field name="name">inherited.model.form.inherit.test</field>
+    <field name="model">inherited.model</field>
+    <field name="inherit_id" ref="inherited.inherited_model_view_form"/>
+    <field name="arch" type="xml">
+        <!-- find field description and add the field
+             new_field after it -->
+        <xpath expr="//field[@name='description']" position="after">
+          <field name="new_field"/>
+        </xpath>
+    </field>
+</record>
+```
+
+* `expr`\
+  An XPath expression selecting a single element in the parent view. Raises an error if it matches no element or more than one
+* `position`\
+  Operation to apply to the matched element:
+  * `inside`\
+    appends xpath’s body to the end of the matched element
+  * `replace`\
+    replaces the matched element with the xpath’s body, replacing any $0 node occurrence in the new body with the original element
+  * `before`\
+    inserts the xpath’s body as a sibling before the matched element
+  * `after`\
+    inserts the xpaths’s body as a sibling after the matched element
+  * `attributes`\
+    alters the attributes of the matched element using the special attribute elements in the xpath’s body
+
+An example of a view inheritance extension can be found
+[here](https://github.com/odoo/odoo/blob/691d1f087040f1ec7066e485d19ce3662dfc6501/addons/account_fleet/views/account_move_views.xml#L3-L17).
+
+An example of inheritance of the users’ view can be found [here](https://github.com/odoo/odoo/blob/691d1f087040f1ec7066e485d19ce3662dfc6501/addons/gamification/views/res_users_views.xml#L5-L14).
