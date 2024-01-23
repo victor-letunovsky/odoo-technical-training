@@ -36,6 +36,20 @@ class EstatePropertyOffer(models.Model):
             a_create_date = (record.create_date if record.create_date else fields.Date.today()).date()
             record.validity = (record.date_deadline - a_create_date).days
 
+    @api.model_create_multi
+    def create(self, vals_list):
+        """
+        At offer creation, set the property state to ‘Offer Received’.
+        Also raise an error if the user tries to create an offer with a lower amount than an existing offer.
+        """
+        for vals in vals_list:
+            a_property = self.env['estate.property'].browse(vals['property_id'])
+            if a_property.state == 'new':
+                a_property.state = 'received'
+            if vals['price'] < a_property.best_price:
+                raise UserError('The offer must be higher than %s' % a_property.best_price)
+        return super(EstatePropertyOffer, self).create(vals_list)
+
     def action_accept_offer(self):
         for record in self:
             for offer in record.property_id.offer_ids:

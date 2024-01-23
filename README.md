@@ -927,3 +927,65 @@ def _compute_description(self):
         record.description = record.partner_id.name
 ```
 Every time the partner name is changed, the description is modified.
+
+# Inheritance
+It's about extending functionality of an existing module.
+
+## Python Inheritance
+CRUD actions are already included in our model thanks to classical Python inheritance:
+```python
+from odoo import models
+
+class TestModel(models.Model):
+    _name = "test_model"
+    _description = "Test Model"
+
+    ...
+```
+Our class TestModel inherits from [Model](https://www.odoo.com/documentation/16.0/developer/reference/backend/orm.html#odoo.models.Model)
+which provides
+[create()](https://www.odoo.com/documentation/16.0/developer/reference/backend/orm.html#odoo.models.Model.create),
+[read()](https://www.odoo.com/documentation/16.0/developer/reference/backend/orm.html#odoo.models.Model.read),
+[write()](https://www.odoo.com/documentation/16.0/developer/reference/backend/orm.html#odoo.models.Model.write) and
+[unlink()](https://www.odoo.com/documentation/16.0/developer/reference/backend/orm.html#odoo.models.Model.unlink).
+
+These methods (and any other method defined on
+[Model](https://www.odoo.com/documentation/16.0/developer/reference/backend/orm.html#odoo.models.Model))
+can be extended to add specific business logic:
+```python
+from odoo import models, api
+
+class TestModel(models.Model):
+    _name = "test_model"
+    _description = "Test Model"
+
+    ...
+
+    @api.model
+    def create(self, vals):
+        # Do some business logic, modify vals...
+        ...
+        # Then call super to execute the parent method
+        return super().create(vals)
+```
+The decorator [model()](https://www.odoo.com/documentation/16.0/developer/reference/backend/orm.html#odoo.api.model)
+is necessary for the [create()](https://www.odoo.com/documentation/16.0/developer/reference/backend/orm.html#odoo.models.Model.create)
+method because the content of the recordset `self` is not relevant in the context of creation, but it is not necessary for the other CRUD methods.
+
+> **Warning** \
+> Instead of directly override
+> [unlink()](https://www.odoo.com/documentation/16.0/developer/reference/backend/orm.html#odoo.models.Model.unlink)
+> method, it's better to write a new method decorated with
+> [ondelete()](https://www.odoo.com/documentation/16.0/developer/reference/backend/orm.html#odoo.api.ondelete) instead.
+> Methods decorated with `ondelete()` are called during `unlink()` and avoid some issues that can occur during
+> uninstalling the model's module when `unlink()` is directly overriden.
+
+> **Danger**
+> * It is very important to **always** call `super()` to avoid breaking the flow.
+>   There are only a few very specific cases where you don’t want to call it.
+> * Make sure to **always** return data consistent with the parent method.
+>   For example, if the parent method returns a `dict()`, your override must also return a `dict()`.
+
+## Model Inheritance
+
+## View Inheritance

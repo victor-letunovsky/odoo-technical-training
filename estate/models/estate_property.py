@@ -115,6 +115,15 @@ class EstateProperty(models.Model):
                 raise ValidationError('The selling price must be at least 90% of the expected price! '
                                       'You must reduce the expected price if you want to accept the offer.')
 
+    @api.ondelete(at_uninstall=False)
+    def _unlink_property(self):
+        """
+        Prevent deletion of a property if its state is not ‘New’ or ‘Canceled’.
+        """
+        for a_property in self:
+            if a_property.state not in ['new', 'canceled']:
+                raise UserError('Only new and canceled properties can be deleted.')
+
     def action_sold_property(self):
         for record in self:
             if record.state == 'sold':
