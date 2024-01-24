@@ -58,6 +58,7 @@ class EstatePropertyOffer(models.Model):
                     raise UserError('Offer from partner "%s" with price %d is already accepted'
                                     % (offer.partner_id.name, offer.price))
             record.status = 'accepted'
+            record.property_id.state = 'accepted'
             record.property_id.selling_price = record.price
             record.property_id.buyer = record.partner_id
 

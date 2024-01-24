@@ -1031,3 +1031,13 @@ An example of a view inheritance extension can be found
 [here](https://github.com/odoo/odoo/blob/691d1f087040f1ec7066e485d19ce3662dfc6501/addons/account_fleet/views/account_move_views.xml#L3-L17).
 
 An example of inheritance of the users’ view can be found [here](https://github.com/odoo/odoo/blob/691d1f087040f1ec7066e485d19ce3662dfc6501/addons/gamification/views/res_users_views.xml#L5-L14).
+
+# Interact With Other Modules
+Any time we interact with another module, we need to keep in mind the modularity.
+If we intend to sell our application to real estate agencies, some may want the invoicing feature but others may not want it.
+
+The common approach for such use cases is to create a _‘link’_ module.
+In our case, the module would depend on `estate` and `account` and would include the invoice creation logic
+of the estate property.
+This way the real estate and the accounting modules can be installed independently.
+When both are installed, the link module provides the new feature.
