@@ -1041,3 +1041,62 @@ In our case, the module would depend on `estate` and `account` and would include
 of the estate property.
 This way the real estate and the accounting modules can be installed independently.
 When both are installed, the link module provides the new feature.
+
+# A Brief History Of QWeb
+Documentation: [QWeb Templates](https://www.odoo.com/documentation/16.0/developer/reference/frontend/qweb.html#reference-qweb)
+
+QWeb is the primary templating engine used by Odoo.
+It is an XML templating engine and used mostly to generate HTML fragments and pages.
+
+## A Kanban View
+Documentation: [Kanban](https://www.odoo.com/documentation/16.0/developer/reference/backend/views.html#reference-views-kanban)
+
+Kanban board is when the records are displayed in a card-like structure.
+
+The definition of a Kanban view is similar to the definition of the list and form views,
+except that their root element is `<kanban>`.
+
+In its simplest form, a Kanban view looks like:
+```xml
+<kanban>
+    <templates>
+        <t t-name="kanban-box">
+            <div class="oe_kanban_global_click">
+                <field name="name"/>
+            </div>
+        </t>
+    </templates>
+</kanban>
+```
+Breaking down this example:
+* `<templates>`: defines a list of [QWeb Templates](https://www.odoo.com/documentation/16.0/developer/reference/frontend/qweb.html#reference-qweb).
+  Kanban views _must_ define at least one root template `kanban-box`, which will be rendered once for each record.
+* `<t t-name="kanban-box">`: `<t>` is a placeholder element for QWeb directives. 
+  In this case, it is used to set the `name` of the template to `kanban-box`
+* `<div class="oe_kanban_global_click">`: the `oe_kanban_global_click` makes the `<div>` clickable to open the record.
+* `<field name="name"/>`: this will add the `name` field to the view.
+
+If we want to display an element conditionally, we can use the `t-if` directive
+(see [Conditionals](https://www.odoo.com/documentation/16.0/developer/reference/frontend/qweb.html#reference-qweb-conditionals)):
+```xml
+<kanban>
+    <!-- 'state' field is outside '<templates>' element - if we need the value of a field but don't want to display
+         it in the view. -->
+    <field name="state"/>
+    <templates>
+        <t t-name="kanban-box">
+            <div class="oe_kanban_global_click">
+                <field name="name"/>
+                <!-- the '<div>' element is rendered if the condition is true -->
+                <div t-if="record.state.raw_value == 'new'">
+                    This is new!
+                </div>
+            </div>
+        </t>
+    </templates>
+</kanban>
+```
+`record` is an object with all the requested fields as its attributes.
+Each field has two attributes `value` and `raw_value`.
+The former is formatted according to current user parameters and the latter is the direct value from a
+[read()](https://www.odoo.com/documentation/16.0/developer/reference/backend/orm.html#odoo.models.Model.read).
