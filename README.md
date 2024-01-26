@@ -5,6 +5,8 @@ The Technical Training of Odoo 16.0 is available on the
 
 [Developer Mode](https://www.odoo.com/documentation/16.0/applications/general/developer_mode.html)
 
+[Solutions](https://github.com/odoo/technical-training-solutions/tree/16.0-core) to this training
+
 # A New Application
 
 1. The model is defined in the file `estate/models/estate_property.py`
@@ -1100,3 +1102,104 @@ If we want to display an element conditionally, we can use the `t-if` directive
 Each field has two attributes `value` and `raw_value`.
 The former is formatted according to current user parameters and the latter is the direct value from a
 [read()](https://www.odoo.com/documentation/16.0/developer/reference/backend/orm.html#odoo.models.Model.read).
+
+# Module Data
+
+## Data Types
+There are two:
+1. Master Data
+2. Demo Data
+
+### Master Data
+Master data is usually part of the technical or business requirements for the module.
+In other words, such data is often necessary for the module to work properly.
+This data will always be installed when installing the module.
+
+Example of technical data are
+[views](https://www.odoo.com/documentation/16.0/developer/reference/backend/views.html#reference-views) and
+[actions](https://www.odoo.com/documentation/16.0/developer/reference/backend/actions.html#reference-actions).
+Those are one kind of master data.
+
+On top of technical data, business data can be defined, e.g. _countries_, _currencies_, _units of measure_,
+as well as complete country localization (legal reports, tax definitions, chart of account), and much more...
+
+### Demo Data
+In additional to master data, which are requirements for a module to work properly,
+we also like having data for demonstration purposes:
+* Help the sales representatives make their demos quickly.
+* Have a set of working data for developers to test new features and see how these new features look with
+  data they might not have added themselves.
+* Test that the data is loaded correctly, without raising an error.
+* Setup most of the features to be used quickly when creating a new database.
+
+Demo data is automatically loaded when you start the server if you don’t explicitly say you don’t want it.
+This can be done in the database manager or with the command line:
+```bash
+$  ./odoo-bin --addons-path=... -d db -i account --without-demo=all
+```
+
+## Data Declaration
+
+### Manifest
+Documentation: [Module Manifests](https://www.odoo.com/documentation/16.0/developer/reference/backend/module.html#reference-module-manifest)
+
+Data is declared either in CSV or in XML. Each file containing data must be added in the manifest for them to be loaded.
+
+The keys to use in the manifest to add new data are:
+1. `data` for the master data; includes list of files in following folders:
+   * `views` folder for views and actions
+   * `security` folder for security related data
+   * `data` folder for other data
+2. `demo` for the demo data; includes list of files only in one folder:
+   * `demo` folder for demo data
+
+Folder tree looks like:
+```
+estate
+├── data
+│   └── master_data.xml
+├── demo
+│   └── demo_data.xml
+├── models
+│   ├── *.py
+│   └── __init__.py
+├── security
+│   └── ir.model.access.csv
+├── views
+│   └── estate_property_offer_views.xml
+├── __init__.py
+└── __manifest__.py
+```
+
+Manifest looks like:
+```python
+# -*- coding: utf-8 -*-
+
+{
+    "name": "Real Estate",
+    "depends": [
+        ...
+    ],
+    "data": [
+        "security/ir.model.access.csv",  # CSV and XML files are loaded at the same place
+        "views/estate_property_offer_views.xml",  # Views are data too
+        "data/master_data.xml",  # Split the data in multiple files depending on the model
+    ],
+    "demo": [
+        "demo/demo_data.xml",
+    ]
+    "application": True,
+}
+```
+
+### CSV
+Documentation: [CSV data files](https://www.odoo.com/documentation/16.0/developer/reference/backend/data.html#reference-data-csvdatafiles)
+
+The easiest way to declare simple data is by using the CSV format.
+This is however limited in terms of features: use it for long lists of simple models, but prefer XML otherwise.
+```csv
+id,field_a,field_b,related_id:id
+id1,valueA1,valueB1,module.relatedid
+id2,valueA2,valueB2,module.relatedid
+```
+
