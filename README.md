@@ -1203,3 +1203,21 @@ id1,valueA1,valueB1,module.relatedid
 id2,valueA2,valueB2,module.relatedid
 ```
 
+### XML
+Documentation: [Data Files](https://www.odoo.com/documentation/16.0/developer/reference/backend/data.html#reference-data)
+
+When data is more complex than XML should be used rather than CSV:
+```xml
+<!-- `odoo` is the root element of the data file -->
+<odoo>
+  <record id="id1" model="tutorial.example">
+    <field name="field_a">valueA1</field>
+    <field name="field_b">valueB1</field>
+  </record>
+
+  <record id="id2" model="tutorial.example">
+    <field name="field_a">valueA2</field>
+    <field name="field_b">valueB2</field>
+  </record>
+</odoo>
+```
