@@ -1172,23 +1172,24 @@ estate
 ```
 
 Manifest looks like:
+
 ```python
 # -*- coding: utf-8 -*-
-
+# noinspection PyStatementEffect
 {
-    "name": "Real Estate",
-    "depends": [
-        ...
-    ],
-    "data": [
-        "security/ir.model.access.csv",  # CSV and XML files are loaded at the same place
-        "views/estate_property_offer_views.xml",  # Views are data too
-        "data/master_data.xml",  # Split the data in multiple files depending on the model
-    ],
-    "demo": [
-        "demo/demo_data.xml",
-    ],
-    "application": True,
+  "name": "Real Estate",
+  "depends": [
+    ...
+  ],
+  "data": [
+    "security/ir.model.access.csv",  # CSV and XML files are loaded at the same place
+    "views/estate_property_offer_views.xml",  # Views are data too
+    "data/master_data.xml",  # Split the data in multiple files depending on the model
+  ],
+  "demo": [
+    "demo/demo_data.xml",
+  ],
+  "application": True,
 }
 ```
 
@@ -1342,4 +1343,27 @@ computed fields (including metadata) and python constraints.
 > Generally using raw SQL also bypasses ACLs and increases the risks of injections.
 > Reference: [Security in Odoo](https://www.odoo.com/documentation/16.0/developer/reference/backend/security.html#reference-security)
 
+# Restrict access to data
 
+## Groups
+Documentation: [the security reference](https://www.odoo.com/documentation/16.0/developer/reference/backend/security.html#reference-security)
+
+In keeping with Odoo’s data-driven nature, a group is no more than a record of the `res.groups` model.
+They are normally part of a module’s [master data](https://www.odoo.com/documentation/16.0/developer/tutorials/define_module_data.html),
+defined in one of the module’s data files.
+
+As simple example [can be found here](https://github.com/odoo/odoo/blob/532c083cbbe0ee6e7a940e2bdc9c677bd56b62fa/addons/hr/security/hr_security.xml#L9-L14).
+
+## Access Rights
+Documentation: [Access Rights](https://www.odoo.com/documentation/16.0/developer/reference/backend/security.html#reference-security-acl)
+
+Access rights are a way to give users access to models via groups: associate an access right to a group,
+then all users with that group will have the access.
+
+> **Note**
+> * The group of an access right can be omitted, this means the ACL applies to every user,
+>    this is a useful but risky fallback as depending on the applications installed
+>    it can grant even non-users access to the model.
+> * If no access right applies to a user, they are not granted access (default-deny).
+> * If a menu item points to a model to which a user doesn't have access and has no submenus which the user can see,
+>    the menu will not be displayed.

@@ -19,35 +19,37 @@
         <field name="garden_area">100000</field>
         <field name="garden_orientation">s</field>
     </record>
-    <record id="estate-property-2" model="estate.property">
-        <field name="name">Trailer home</field>
-        <field name="property_type_id" ref="estate-property-type-1"/>
-        <field name="state">canceled</field>
-        <field name="description">Home in a trailer park</field>
-        <field name="postcode">54321</field>
-        <field name="date_availability">1970-01-01</field>
-        <field name="expected_price">100000</field>
-        <field name="selling_price">120000</field>
-        <field name="bedrooms">1</field>
-        <field name="living_area">10</field>
-        <field name="facades">4</field>
-        <field name="garage">False</field>
-        <field name="offer_ids" eval="[
-            Command.create({
-                'price': 110000,
-                'partner_id': ref('base.res_partner_3'),
-                'validity': 31
-            }),
-            Command.create({
-                'price': 120000,
-                'partner_id': ref('base.res_partner_4'),
-                'validity': 32
-            }),
-            Command.create({
-                'price': 130000,
-                'partner_id': ref('base.res_partner_10'),
-                'validity': 33
-            }),
-        ]"/>
-    </record>
+    <data noupdate="1">
+        <record id="estate-property-2" model="estate.property">
+            <field name="name">Trailer home</field>
+            <field name="property_type_id" ref="estate-property-type-1"/>
+            <field name="state">canceled</field>
+            <field name="description">Home in a trailer park</field>
+            <field name="postcode">54321</field>
+            <field name="date_availability">1970-01-01</field>
+            <field name="expected_price">100000</field>
+            <field name="selling_price">120000</field>
+            <field name="bedrooms">1</field>
+            <field name="living_area">10</field>
+            <field name="facades">4</field>
+            <field name="garage">False</field>
+            <field name="offer_ids" eval="[
+                Command.create({
+                    'price': 110000,
+                    'partner_id': ref('base.res_partner_3'),
+                    'validity': 31
+                }),
+                Command.create({
+                    'price': 120000,
+                    'partner_id': ref('base.res_partner_4'),
+                    'validity': 32
+                }),
+                Command.create({
+                    'price': 130000,
+                    'partner_id': ref('base.res_partner_10'),
+                    'validity': 33
+                }),
+            ]"/>
+        </record>
+    </data>
 </odoo>
