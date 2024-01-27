@@ -7,7 +7,7 @@
 "access_estate_property_type_estate_group_user","estate_property_type estate_group_user","model_estate_property_type","estate_group_user",1,0,0,0
 "access_estate_property_tag_estate_group_user","estate_property_tag estate_group_user","model_estate_property_tag","estate_group_user",1,0,0,0
 "access_estate_property_offer_estate_group_user","estate_property_offer estate_group_user","model_estate_property_offer","estate_group_user",1,1,1,0
-"access_estate_property_manager","estate_property manager","model_estate_property","estate_group_manager",1,1,1,0
-"access_estate_property_type_manager","estate_property_type manager","model_estate_property_type","estate_group_manager",1,1,1,0
-"access_estate_property_tag_manager","estate_property_tag manager","model_estate_property_tag","estate_group_manager",1,1,1,0
-"access_estate_property_offer_manager","estate_property_offer manager","model_estate_property_offer","estate_group_manager",1,1,1,0
+"access_estate_property_manager","estate_property manager","model_estate_property","estate_group_manager",1,1,1,1
+"access_estate_property_type_manager","estate_property_type manager","model_estate_property_type","estate_group_manager",1,1,1,1
+"access_estate_property_tag_manager","estate_property_tag manager","model_estate_property_tag","estate_group_manager",1,1,1,1
+"access_estate_property_offer_manager","estate_property_offer manager","model_estate_property_offer","estate_group_manager",1,1,1,1

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="salesperson_user_rule" model="ir.rule">
+        <field name="name">Group 'estate_group_user' is able to see or modify properties which have no salesperson,
+            or for which they are the salesperson</field>
+        <!-- 'model_id' should be in format 'model_%s' where in %s instead '.' there is '_' -->
+        <field name="model_id" ref="model_estate_property"/>
+        <field name="perm_create" eval="False"/>
+        <field name="groups" eval="[Command.link(ref('estate_group_user'))]"/>
+        <!-- 'salesperson == False' means there is no salesperson -->
+        <field name="domain_force">[
+            '|', ('salesperson', '=', user.id),
+                 ('salesperson', '=', False)
+        ]</field>
+    </record>
+    <record id="salesperson_manager_rule" model="ir.rule">
+        <field name="name">Group 'estate_group_manager' can still manage all properties</field>
+        <!-- 'model_id' should be in format 'model_%s' where in %s instead '.' there is '_' -->
+        <field name="model_id" ref="model_estate_property"/>
+        <field name="groups" eval="[Command.link(ref('estate_group_manager'))]"/>
+    </record>
+</odoo>

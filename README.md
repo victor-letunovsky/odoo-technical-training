@@ -1367,3 +1367,24 @@ then all users with that group will have the access.
 > * If no access right applies to a user, they are not granted access (default-deny).
 > * If a menu item points to a model to which a user doesn't have access and has no submenus which the user can see,
 >    the menu will not be displayed.
+
+## Record Rules
+Documentation: [Record Rules](https://www.odoo.com/documentation/16.0/developer/reference/backend/security.html#reference-security-rules)
+
+Record _rules_ can grant or reject access to individual records:
+```xml
+<record id="rule_id" model="ir.rule">
+    <field name="name">A description of the rule's role</field>
+    <field name="model_id" ref="model_to_manage"/>
+    <field name="perm_read" eval="False"/>
+    <field name="groups" eval="[Command.link(ref('base.group_user'))]"/>
+    <field name="domain_force">[
+        '|', ('user_id', '=', user.id),
+             ('user_id', '=', False)
+    ]</field>
+</record>
+```
+The [Search domains](https://www.odoo.com/documentation/16.0/developer/reference/backend/orm.html#reference-orm-domains)
+is how access is managed: if the record passes then access is granted, otherwise access is rejected.
+
+
