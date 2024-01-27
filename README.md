@@ -1187,7 +1187,7 @@ Manifest looks like:
     ],
     "demo": [
         "demo/demo_data.xml",
-    ]
+    ],
     "application": True,
 }
 ```
@@ -1221,3 +1221,125 @@ When data is more complex than XML should be used rather than CSV:
   </record>
 </odoo>
 ```
+
+#### Data Extension
+`eval` is used if you need to compute the value. For example:
+```xml
+<odoo>
+  <record id="id1" model="tutorial.example">
+    <field name="year" eval="datetime.now().year+1"/>
+  </record>
+</odoo>
+```
+
+`search` is used if you need the ORM to do a _search_:
+```xml
+<odoo>
+  <record id="id1" model="account.move.line">
+    <field name="account_id" search="[
+      ('user_type_id', '=', ref('account.data_account_type_direct_costs')),
+      ('company_id', '=', obj().env.company.id)]
+    "/>
+  </record>
+</odoo>
+```
+
+`function` is needed to execute python code when loading data:
+```xml
+<function model="tutorial.example" name="action_validate">
+    <value eval="[ref('demo_invoice_1')]"/>
+</function>
+```
+
+### Add X2many fields
+Documentation: [Command](https://www.odoo.com/documentation/16.0/developer/reference/backend/orm.html#odoo.fields.Command)
+
+[Command](https://www.odoo.com/documentation/16.0/developer/reference/backend/orm.html#odoo.fields.Command) is used
+to add related data in One2many or Many2many field:
+```xml
+<odoo>
+  <record id="id1" model="tutorial.example">
+    <field name="related_ids" eval="[
+        Command.create({
+            'name': 'My name',
+        }),
+        Command.create({
+            'name': 'Your name',
+        }),
+        Command.link(ref('model.xml_id')),
+    ]"/>
+  </record>
+</odoo>
+```
+For example offers in _Trailer home_ property: [estate.property.xml](./estate/data/estate.property.xml)
+
+## Accessing the data
+> **Warning**\
+> You should **never** access demo data outside the demo data declaration, not even in tests.
+
+### In python
+In python code, you can use the `env.ref(self, xml_id, raise_if_not_found=True)` method.
+It returns the recordset linked to the `xml_id` you specify.
+
+### In XML
+In XML, you can use the `ref` key like this:
+```xml
+<odoo>
+  <record id="id1" model="tutorial.example">
+    <field name="related_id" ref="module.relatedid"/>
+  </record>
+</odoo>
+```
+
+### In CSV
+The title of the column must be suffixed with `:id` or `/id` :
+```csv
+id,parent_id:id,name
+"child1","module.parent","Name1"
+"child2","module.parent","Name2"
+"child3","module.parent","Name3"
+```
+For example: [list of country states](https://github.com/odoo/odoo/blob/16.0/odoo/addons/base/data/res.country.state.csv)
+
+## Advanced
+
+### External id or XML id
+Because we don’t want a column `xml_id` in every single SQL table of the database, we need a mechanism to store it.
+This is done with the `ir.model.data` model.
+
+To get list of external id (xml_id) from DB:
+```sql
+SELECT * FROM public.ir_model_data where model like 'estate%';
+```
+
+### No update
+The records created with the `noupdate` flag won’t be updated when upgrading the module that created them,
+but it will be created if it didn't exist yet:
+```xml
+<odoo noupdate="1">
+  <record id="id1" model="model">
+    <field name="fieldA" eval="True"/>
+  </record>
+</odoo>
+```
+> **Note**\
+> `odoo-bin -i module` will bypass this setting and always load the data.
+> But normally one shouldn’t do this on a production database.
+
+### Import as SQL
+In some cases, it makes sense to do the import directly in SQL.
+This is however discouraged as it bypasses all the features of the ORM,
+computed fields (including metadata) and python constraints.
+
+* It can help to speed the import time by a lot
+   [with huge files](https://github.com/odoo/enterprise/blob/d46cceef8c594b9056d0115edb7169e207a5986f/product_unspsc/hooks.py#L19).
+* For more complex imports like for the
+   [translations](https://github.com/odoo/odoo/blob/e1f8d549895cd9c459e6350430f30d541d02838a/odoo/addons/base/models/ir_translation.py#L24).
+* It can be necessary to
+   [initialize the database](https://github.com/odoo/odoo/blob/e1f8d549895cd9c459e6350430f30d541d02838a/odoo/addons/base/data/base_data.sql).
+
+> **Note**\
+> Generally using raw SQL also bypasses ACLs and increases the risks of injections.
+> Reference: [Security in Odoo](https://www.odoo.com/documentation/16.0/developer/reference/backend/security.html#reference-security)
+
+

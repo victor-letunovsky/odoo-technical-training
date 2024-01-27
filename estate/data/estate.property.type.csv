@@ -1,5 +1,5 @@
 id,name
-1,Residential
-2,Commercial
-3,Industrial
-4,Land
+estate-property-type-1,Residential
+estate-property-type-2,Commercial
+estate-property-type-3,Industrial
+estate-property-type-4,Land

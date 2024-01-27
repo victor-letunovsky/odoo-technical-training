@@ -14,7 +14,8 @@
         'views/estate_menus.xml',
         'views/res_users_views.xml',
         'data/estate.property.type.csv',
-        'data/estate.property.xml'
+        'data/estate.property.xml',
+        'data/estate.property.offer.xml'
     ],
     "installable": True,
     'license': 'LGPL-3',

@@ -2,7 +2,10 @@
 <odoo>
     <record id="estate-property-1" model="estate.property">
         <field name="name">Big Villa</field>
-        <field name="property_type_id" ref="1"/>
+        <!-- ref is a valid `external id` mostly for `Many2one` and `Reference` fields
+             ref is composed of module dot id (just the id if the same module).
+        -->
+        <field name="property_type_id" ref="estate-property-type-1"/>
         <field name="state">new</field>
         <field name="description">A nice and big villa</field>
         <field name="postcode">12345</field>
@@ -18,7 +21,7 @@
     </record>
     <record id="estate-property-2" model="estate.property">
         <field name="name">Trailer home</field>
-        <field name="property_type_id" ref="1"/>
+        <field name="property_type_id" ref="estate-property-type-1"/>
         <field name="state">canceled</field>
         <field name="description">Home in a trailer park</field>
         <field name="postcode">54321</field>
@@ -29,5 +32,22 @@
         <field name="living_area">10</field>
         <field name="facades">4</field>
         <field name="garage">False</field>
+        <field name="offer_ids" eval="[
+            Command.create({
+                'price': 110000,
+                'partner_id': ref('base.res_partner_3'),
+                'validity': 31
+            }),
+            Command.create({
+                'price': 120000,
+                'partner_id': ref('base.res_partner_4'),
+                'validity': 32
+            }),
+            Command.create({
+                'price': 130000,
+                'partner_id': ref('base.res_partner_10'),
+                'validity': 33
+            }),
+        ]"/>
     </record>
 </odoo>
