@@ -1387,4 +1387,31 @@ Record _rules_ can grant or reject access to individual records:
 The [Search domains](https://www.odoo.com/documentation/16.0/developer/reference/backend/orm.html#reference-orm-domains)
 is how access is managed: if the record passes then access is granted, otherwise access is rejected.
 
+## Security Override
+### Bypassing Security
+There are two main ways to bypass existing security checks in Odoo, either wilfully or as a side effect:
+* The `sudo()` method will create a new recordset in _“sudo mode”_, this ignores all access rights and record rules
+   (although hard-coded group and user checks may still apply).
+* Performing raw SQL queries will bypass access rights and record rules as a side effect of bypassing the ORM itself.
 
+> **Danger**\
+> These features should generally be avoided, and only used with extreme care, after having checked that
+> the current user and operation should be able to bypass normal access rights validation.
+> Operations performed in such modes should also rely on user input as little as possible,
+> and should validate it to the maximum extent they can.
+
+### Programmatically checking security
+Therefore, when performing non-CRUD operations, or legitimately bypassing the ORM or security, or when triggering other
+side effects, it is extremely important to perform explicit security checks.
+
+Explicit security checks can be performed by:
+* Checking who the current user is (`self.env.user`) and match them against specific models or records.
+* Checking that the current user has specific groups hard-coded to allow or deny an operation (`self.env.user.has_group`).
+* Calling the `check_access_rights(operation)` method on a recordset, this verifies whether the current user
+   has access to the model itself.
+* Calling `check_access_rule(operations)` on a non-empty recordset, this verifies that the current user
+   is allowed to perform the operation on _every_ record of the set.
+
+> **Warning**\
+> Checking access rights and checking record rules are separate operations,
+> if you’re checking record rules you usually want to also check access rights beforehand.
