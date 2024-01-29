@@ -1415,3 +1415,29 @@ Explicit security checks can be performed by:
 > **Warning**\
 > Checking access rights and checking record rules are separate operations,
 > if you’re checking record rules you usually want to also check access rights beforehand.
+
+## Multi-company security
+
+> **See also**\
+> [Multi-company Guidelines](https://www.odoo.com/documentation/16.0/developer/howtos/company.html#reference-howtos-company)
+> for an overview of multi-company facilities in general, and
+> [multi-company security rules](https://www.odoo.com/documentation/16.0/developer/howtos/company.html#howto-company-security) in particular.
+
+Multi-company rules are simply record rules based on the `company_ids` or `company_id` fields:
+* `company_ids` is all the companies to which the current user has access
+* `company_id` is the currently active company (the one the user is currently working in / for).
+Multi-company rules will _usually_ use the former i.e. check if the record is associated with _one_ of the companies the user has access to:
+```xml
+<record model="ir.rule" id="hr_appraisal_plan_comp_rule">
+    <field name="name">Appraisal Plan multi-company</field>
+    <field name="model_id" ref="model_hr_appraisal_plan"/>
+    <field name="domain_force">[
+        '|', ('company_id', '=', False),
+             ('company_id', 'in', company_ids)
+    ]</field>
+</record>
+```
+
+> **Danger**\
+> Multi-company rules are usually [global](https://www.odoo.com/documentation/16.0/developer/reference/backend/security.html#reference-security-rules-global),
+> otherwise there is a high risk that additional rules would allow bypassing the multi-company rules.

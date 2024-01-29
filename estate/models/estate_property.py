@@ -75,6 +75,8 @@ class EstateProperty(models.Model):
 
     best_price = fields.Float('Best Offer', compute='_compute_best_price')
 
+    company_id = fields.Many2one('res.company', required=True, default=lambda self: self.env.company)
+
     _sql_constraints = [
         ('check_expected_price_strict_positive', 'CHECK(expected_price > 0)',
          'The expected price of the property must be strictly positive.'),
