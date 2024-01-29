@@ -1441,3 +1441,16 @@ Multi-company rules will _usually_ use the former i.e. check if the record is as
 > **Danger**\
 > Multi-company rules are usually [global](https://www.odoo.com/documentation/16.0/developer/reference/backend/security.html#reference-security-rules-global),
 > otherwise there is a high risk that additional rules would allow bypassing the multi-company rules.
+
+## Visibility != Security
+
+* _Visibility_ features mean a user can still access the model or record otherwise, either through another part
+   of the interface or by [performing operations remotely using RPC](https://www.odoo.com/documentation/16.0/developer/reference/external_api.html),
+   things might just not be visible in the web interface in some contexts.
+* _Security_ features mean a user can not access records, fields or operations.
+
+Examples:
+* In server actions [only system users can see or update Python code.](https://github.com/odoo/odoo/blob/7058e338a980268df1c502b8b2860bdd8be9f727/odoo/addons/base/models/ir_actions.py#L414-L417)
+* [only managers have an immediate filter to see their teams’ leaves.](https://github.com/odoo/odoo/blob/8e19904bcaff8300803a7b596c02ec45fcf36ae6/addons/hr_holidays/report/hr_leave_reports.xml#L16)
+* [only system administrators can see the elearning settings menu.](https://github.com/odoo/odoo/blob/ff828a3e0c5386dc54e6a46fd71de9272ef3b691/addons/website_slides/views/website_slides_menu_views.xml#L64-L69)
+
