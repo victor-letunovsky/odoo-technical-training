@@ -139,6 +139,8 @@ class EstateProperty(models.Model):
                 raise UserError('Estate property "%s" is already sold.' % record.name)
             elif record.state == 'canceled':
                 raise UserError('Canceled estate properties cannot be sold.')
+            elif not any(offer.status == 'accepted' for offer in record.offer_ids):
+                raise UserError("Cannot sell a property that doesn't have an accepted offer.")
             else:
                 record.state = 'sold'
 

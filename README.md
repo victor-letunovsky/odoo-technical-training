@@ -1454,3 +1454,148 @@ Examples:
 * [only managers have an immediate filter to see their teams’ leaves.](https://github.com/odoo/odoo/blob/8e19904bcaff8300803a7b596c02ec45fcf36ae6/addons/hr_holidays/report/hr_leave_reports.xml#L16)
 * [only system administrators can see the elearning settings menu.](https://github.com/odoo/odoo/blob/ff828a3e0c5386dc54e6a46fd71de9272ef3b691/addons/website_slides/views/website_slides_menu_views.xml#L64-L69)
 
+# Unit Tests
+Documentation: [Odoo’s Test Framework: Learn Best Practices](https://www.youtube.com/watch?v=JEIscps0OOQ) (Odoo Experience 2020) on YouTube.
+
+Writing tests is a necessity for multiple reasons. Here is a non-exhaustive list:
+* Ensure code will not be broken in the future
+* Define the scope of your code
+* Give examples of use cases
+* It is one way to technically document the code
+* Help your coding by defining your goal before working towards it
+
+## Running Tests
+Run all the tests of account, and modules installed by account the dependencies already installed are not tested
+this takes some time because you need to install the modules, but `at_install` and `post_install` are respected:
+```bash
+$ odoo-bin -i account --test-enable
+```
+
+Run all the tests in this file:
+```bash
+$ odoo-bin --test-file=addons/account/tests/test_account_move_entry.py
+```
+
+Test tags can help you filter quite easily:
+```bash
+$ odoo-bin --test-tags=/account:TestAccountMove.test_custom_currency_on_account_1
+```
+
+## CI: Integration Bots
+
+### Runbot
+Documentation: [Runbot FAQ](https://runbot.odoo.com/doc)
+
+### Robodoo
+
+### Mergebot
+Documentation: [Mergebot](https://mergebot.odoo.com/)
+
+## Modules
+Because Odoo is modular, the tests need to be also modular.
+This means tests are defined in the module that adds the functionality you are adding in,
+and tests cannot depend on functionality coming from modules your module doesn't depend on.
+
+Documentation: [Special Tags](https://www.odoo.com/documentation/16.0/developer/reference/backend/testing.html#reference-testing-tags)
+```python
+from odoo.tests.common import TransactionCase
+from odoo.tests import tagged
+
+# The CI will run these tests after all the modules are installed,
+# not right after installing the one defining it.
+@tagged('post_install', '-at_install')  # add `post_install` and remove `at_install`
+class PostInstallTestCase(TransactionCase):
+    def test_01(self):
+        ...
+
+@tagged('at_install')  # this is the default
+class AtInstallTestCase(TransactionCase):
+    def test_01(self):
+        ...
+```
+If the behavior you want to test can be changed by the installation of another module,
+you need to ensure that the tag `at_install` is set; otherwise, you can use the tag `post_install`
+to speed up the CI and ensure it is not changed if it shouldn’t.
+
+## Writing a test
+Documentation: [Python unittest](https://docs.python.org/3/library/unittest.html) and
+[Testing Odoo](https://www.odoo.com/documentation/16.0/developer/reference/backend/testing.html#reference-testing)
+
+Here are a few things to take into consideration before writing a test:
+* The tests should be independent of the data currently in the database (including demo data)
+* Tests should not impact the database by leaving/changing residual data.
+   This is usually done by the test framework by doing a rollback.
+   Therefore, you must never call `cr.commit` in a test (nor anywhere else in the business code).
+* For a bug fix, the test should fail before applying the fix and pass after.
+* Don’t test something that is already tested elsewhere; you can trust the ORM.
+   Most of the tests in business modules should only test the business flows.
+* You shouldn’t need to flush data into the database.
+
+> **Note**\
+> Remember that `onchange` only applies in the Form views, not by changing the attributes in python.
+> This also applies in the tests. If you want to emulate a Form view, you can use `odoo.tests.common.Form`.
+
+The tests should be in a `tests` folder at the root of your module.
+Each test file name should start with `test_` and be imported in the `__init__.py` of the test folder.
+You shouldn’t import the test folder/module in the `__init__.py` of the module.
+
+```
+estate
+├── models
+│   ├── *.py
+│   └── __init__.py
+├── tests
+│   ├── test_*.py
+│   └── __init__.py
+├── __init__.py
+└── __manifest__.py
+```
+All the tests should extend `odoo.tests.common.TransactionCase`. You usually define a `setUpClass` and the tests.
+After writing the `setUpClass`, you have an `env` available in the class and can start interacting with the ORM.
+
+These test classes are built on top of the `unittest` python module.
+```python
+from odoo.tests.common import TransactionCase
+from odoo.exceptions import UserError
+from odoo.tests import tagged
+
+# The CI will run these tests after all the modules are installed,
+# not right after installing the one defining it.
+@tagged('post_install', '-at_install')
+class EstateTestCase(TransactionCase):
+
+    @classmethod
+    def setUpClass(cls):
+        # add env on cls and many other things
+        super(EstateTestCase, cls).setUpClass()
+
+        # create the data for each tests. By doing it in the setUpClass instead
+        # of in a setUp or in each test case, we reduce the testing time and
+        # the duplication of code.
+        cls.properties = cls.env['estate.property'].create([...])
+
+    def test_creation_area(self):
+        """Test that the total_area is computed like it should."""
+        self.properties.living_area = 20
+        self.assertRecordValues(self.properties, [
+           {'name': ..., 'total_area': ...},
+           {'name': ..., 'total_area': ...},
+        ])
+
+
+    def test_action_sell(self):
+        """Test that everything behaves like it should when selling a property."""
+        self.properties.action_sold()
+        self.assertRecordValues(self.properties, [
+           {'name': ..., 'state': ...},
+           {'name': ..., 'state': ...},
+        ])
+
+        with self.assertRaises(UserError):
+            self.properties.forbidden_action_on_sold_property()
+```
+> **Note**\
+> For better readability, split your tests into multiple files depending on the scope of the tests.
+> You can also have a Common class that most of the tests should inherit from;
+> this common class can define the whole setup for the module.
+> For instance, in [account](https://github.com/odoo/odoo/blob/16.0/addons/account/tests/common.py).

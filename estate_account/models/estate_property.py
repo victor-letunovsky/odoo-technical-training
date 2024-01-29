@@ -29,13 +29,13 @@ class EstateProperty(models.Model):
                     'sequence': 0,
                     'name': a_property.name,
                     'quantity': 1,
-                    'price_unit': a_property.best_price
+                    'price_unit': a_property.selling_price
                 }),
                 Command.create({
                     'sequence': 1,
                     'name': 'Administrative fees',
                     'quantity': 1,
-                    'price_unit': a_property.best_price / 200
+                    'price_unit': a_property.selling_price / 200
                 })
             ]
             invoice_vals = {

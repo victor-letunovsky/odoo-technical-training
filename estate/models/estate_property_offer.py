@@ -46,6 +46,8 @@ class EstatePropertyOffer(models.Model):
             a_property = self.env['estate.property'].browse(vals['property_id'])
             if a_property.state == 'new':
                 a_property.state = 'received'
+            elif a_property.state == 'sold':
+                raise UserError('You cannot make an offer on a sold property')
             if vals['price'] < a_property.best_price:
                 raise UserError('The offer must be higher than %s' % a_property.best_price)
         return super(EstatePropertyOffer, self).create(vals_list)
