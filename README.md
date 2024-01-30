@@ -1675,5 +1675,9 @@ Example of a sub-template: the
 [example](https://github.com/odoo/odoo/blob/0e12fa135882cd5095dbf15fe2f64231c6a84336/addons/portal/static/src/xml/portal_chatter.xml#L147-L160)
 
 ## Report Inheritance
+Inheritance in QWeb uses the same `xpath` elements as
+[views inheritance](https://www.odoo.com/documentation/16.0/developer/reference/backend/views.html#reference-views-inheritance).
+A QWeb template refers to its parent template in a different way though.
+It is even easier to do by just adding the `inherit_id` attribute to the `template` element and setting it equal to the _module.parent_template_id_.
 
 ## Additional Features

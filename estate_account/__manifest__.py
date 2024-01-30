@@ -4,7 +4,9 @@
     "category": "estate",
     "application": True,
     "depends": ["estate", "account"],
-    "data": [],
+    "data": [
+        'report/estate_property_report_templates.xml',
+    ],
     "installable": True,
     "license": "LGPL-3"
 }
