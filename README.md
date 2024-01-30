@@ -1681,3 +1681,24 @@ A QWeb template refers to its parent template in a different way though.
 It is even easier to do by just adding the `inherit_id` attribute to the `template` element and setting it equal to the _module.parent_template_id_.
 
 ## Additional Features
+All the following extra features are described further in the
+[QWeb Reports](https://www.odoo.com/documentation/16.0/developer/reference/backend/reports.html#reference-reports-report) documentation,
+including how to implement each of them.
+
+### Translations
+We all know Odoo is used in multiple languages thanks to automated and manual translating.
+QWeb reports are no exception!
+Note that sometimes the translations do not work properly if there are unnecessary spaces in your template’s text content,
+so try to avoid them when possible (especially leading spaces).
+
+### Reports are web pages
+You probably are tired of hearing that QWeb creates HTML, but we’re saying it again!
+One of the neat features of reports being written in QWeb is they can be viewed within the web browser.
+This can be useful if you want to embed a hyperlink that leads to a specific report.
+Note that the usual security checks will still apply to prevent unauthorized users from accessing the reports.
+
+### Barcodes
+Odoo has a built-in barcode image creator that allows for barcodes to be embedded in your reports.
+Check out the corresponding
+[code](https://github.com/odoo/odoo/blob/0e12fa135882cd5095dbf15fe2f64231c6a84336/addons/web/controllers/main.py#L2044-L2046)
+to see all the supported barcode types.
