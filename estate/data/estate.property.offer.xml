@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
+    <!-- Villa offers -->
     <record id="estate-property-offer-1" model="estate.property.offer">
         <field name="partner_id" ref="base.res_partner_12"/>
         <field name="property_id" ref="estate-property-1"/>
@@ -17,5 +18,19 @@
         <field name="property_id" ref="estate-property-1"/>
         <field name="price">1500001</field>
         <field name="validity">14</field>
+    </record>
+
+    <!-- Cabin offers -->
+    <record id="offer_cabin_1" model="estate.property.offer">
+        <field name="price">60000</field>
+        <field name="validity">14</field>
+        <field name="partner_id" ref="base.res_partner_12"/>
+        <field name="property_id" ref="cabin"/>
+    </record>
+    <record id="offer_cabin_2" model="estate.property.offer">
+        <field name="price">75000</field>
+        <field name="validity">14</field>
+        <field name="partner_id" ref="base.res_partner_12"/>
+        <field name="property_id" ref="cabin"/>
     </record>
 </odoo>

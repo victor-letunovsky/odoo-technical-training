@@ -130,6 +130,7 @@ class EstateProperty(models.Model):
         Prevent deletion of a property if its state is not ‘New’ or ‘Canceled’.
         """
         for a_property in self:
+            # if not set(self.mapped("state")) <= {"new", "canceled"}:
             if a_property.state not in ['new', 'canceled']:
                 raise UserError('Only new and canceled properties can be deleted.')
 

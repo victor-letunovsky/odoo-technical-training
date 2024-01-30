@@ -1608,3 +1608,65 @@ They are Odoo models exposing useful methods through inheritance.
 To learn and play with mixins, visit [this repository](https://github.com/tivisse/odoodays-2018/).
 This module for a plant nursery is training material developed for the OXP 2018. You don’t need to code it on your side.
 But you can check the presentations in the `/static/pdf` directory and play with the module to discover some magic features in Odoo.
+
+# Build PDF Reports
+Building PDF reports is a feature of QWeb.
+
+Odoo can add header and footer to reports with minimal extra effort.
+
+Documentation:
+* [QWeb Templates](https://www.odoo.com/documentation/16.0/developer/reference/frontend/qweb.html#reference-qweb)
+* [QWeb Reports](https://www.odoo.com/documentation/16.0/developer/reference/backend/reports.html#reference-reports-report)
+* [Report Actions (ir.actions.report)](https://www.odoo.com/documentation/16.0/developer/reference/backend/actions.html#reference-actions-report)
+   section of the Actions reference.
+
+## File Structure
+The bulk of a PDF report is its QWeb template.
+It also typically needs a corresponding `ir.actions.report` to include the report within a module’s business logic.
+There is no strict rule for the file names or where they are located, but these two parts are typically stored
+in 2 separate files within a `report` folder at the top level of your module’s directory.
+If a module has many or multiple long report templates, then they are often organized logically across different
+files named after the report(s) they contain.
+All actions for the reports are usually stored in the same file ending with `_reports.xml`,
+regardless of the number of reports it contains.
+
+Therefore, it is expected that project tree will look something like this:
+```
+estate
+├── models
+│   ├── *.py
+│   └── __init__.py
+├── report
+│   ├── estate_property_templates.xml
+│   └── estate_property_reports.xml
+├── security
+│   └── ir.model.access.csv
+├── views
+│   └── *.xml
+├── __init__.py
+└── __manifest__.py
+```
+Add template and action view files into your `__manifest__.py` `data` list.
+Remember that those files are loaded sequentially.
+
+## Basic Report
+Example of "Minimal viable template" is in
+[Report template](https://www.odoo.com/documentation/16.0/developer/reference/backend/reports.html#reference-reports-templates)
+documentation.
+
+Example of `ir.actions.report` is
+[here](https://github.com/odoo/odoo/blob/0e12fa135882cd5095dbf15fe2f64231c6a84336/addons/event/report/event_event_reports.xml#L20-L30)
+corresponding to
+[this template](https://github.com/odoo/odoo/blob/0e12fa135882cd5095dbf15fe2f64231c6a84336/addons/event/report/event_event_templates.xml#L5).
+Its contents are all explained in [the documentation](https://www.odoo.com/documentation/16.0/developer/reference/backend/actions.html#reference-actions-report).
+
+An `ir.actions.report` is primarily used via the _Print_ menu of a model’s view.
+In the practical example, the `binding_model_id` specifies which model’s views the report should show, and Odoo will auto-magically add it for you.
+
+Another common use case of the report action is to link it to a [button](#Actions) or menu item.
+
+## Sub-templates
+
+## Report Inheritance
+
+## Additional Features

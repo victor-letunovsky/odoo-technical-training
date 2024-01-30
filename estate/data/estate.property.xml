@@ -33,6 +33,8 @@
             <field name="living_area">10</field>
             <field name="facades">4</field>
             <field name="garage">False</field>
+            <!-- It's just an example.
+                 It's better to fill offer data through the similar data file like 'estate.property.offer.xml'
             <field name="offer_ids" eval="[
                 Command.create({
                     'price': 110000,
@@ -50,6 +52,33 @@
                     'validity': 33
                 }),
             ]"/>
+            -->
         </record>
     </data>
+    <record id="space_ship" model="estate.property">
+        <field name="name">International Space Station</field>
+        <field name="state">new</field>
+        <field name="description">Aliens sometimes come visit</field>
+        <field name="postcode">----</field>
+        <field name="date_availability">2030-12-31</field>
+        <field name="expected_price">45890000</field>
+        <field name="property_type_id" ref="estate-property-type-3"/>
+        <field name="salesperson" ref="base.user_admin"/>
+    </record>
+
+    <record id="cabin" model="estate.property">
+        <field name="name">Cozy Cabin</field>
+        <field name="state">new</field>
+        <field name="description">Small cabin by lake</field>
+        <field name="postcode">10000</field>
+        <field name="date_availability" eval="str(datetime.now().year)+'-02-11'"/>
+        <field name="expected_price">80000</field>
+        <field name="bedrooms">1</field>
+        <field name="living_area">10</field>
+        <field name="facades">4</field>
+        <field name="garage">False</field>
+        <field name="garden">True</field>
+        <field name="property_type_id" ref="estate-property-type-1"/>
+        <field name="salesperson" ref="base.user_admin"/>
+    </record>
 </odoo>
