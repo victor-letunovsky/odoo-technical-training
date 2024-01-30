@@ -1666,6 +1666,13 @@ In the practical example, the `binding_model_id` specifies which model’s views
 Another common use case of the report action is to link it to a [button](#Actions) or menu item.
 
 ## Sub-templates
+There are two main reasons for using sub-templates:
+1. To make the code easier to read when working with extra-long or complicated templates.
+2. The other is to reuse code where possible.
+
+Example of a sub-template: the
+[documentation](https://www.odoo.com/documentation/16.0/developer/reference/frontend/qweb.html#reference-qweb-sub-templates) and an
+[example](https://github.com/odoo/odoo/blob/0e12fa135882cd5095dbf15fe2f64231c6a84336/addons/portal/static/src/xml/portal_chatter.xml#L147-L160)
 
 ## Report Inheritance
 
