@@ -423,7 +423,7 @@ Computed fields are _read-only_ by default.
 The value of a computed field usually depends on the values of other fields in the computed record.
 The ORM expects the developer to specify those dependencies on the compute method with the
 decorator [depends()](https://www.odoo.com/documentation/16.0/developer/reference/backend/orm.html#odoo.api.depends).
-The given dependencies are used by the ORM to trigger the recomputation of the field whenever some
+The given dependencies are used by the ORM to trigger the re-computation of the field whenever some
 of its dependencies have been modified:
 
 ```python
@@ -513,7 +513,7 @@ def _compute_description(self):
 ```
 
 Every time the partner name is changed, the description is automatically recomputed for **all the records** referring to it!
-This can quickly become prohibitive to recompute when millions of records need recomputation.
+This can quickly become prohibitive to recompute when millions of records need re-computation.
 
 It is also worth noting that a computed field can depend on another computed field.
 The ORM is smart enough to correctly recompute all the dependencies in the right order…
@@ -566,7 +566,7 @@ Since several onchange methods may set the same fields, it easily becomes diffic
 > Prefer _computed fields_ over the _onchanges_
 
 When using stored computed fields, pay close attention to the dependencies.
-When computed fields depend on other computed fields, changing a value can trigger a large number of recomputations.
+When computed fields depend on other computed fields, changing a value can trigger a large number of re-computations.
 This leads to poor performance.
 
 # Action
@@ -1025,7 +1025,7 @@ a number of xpath elements that select and alter the content of their parent vie
   * `before`\
     inserts the xpath’s body as a sibling before the matched element
   * `after`\
-    inserts the xpaths’s body as a sibling after the matched element
+    inserts the xpath’s body as a sibling after the matched element
   * `attributes`\
     alters the attributes of the matched element using the special attribute elements in the xpath’s body
 
@@ -1287,7 +1287,7 @@ In XML, you can use the `ref` key like this:
 ```xml
 <odoo>
   <record id="id1" model="tutorial.example">
-    <field name="related_id" ref="module.relatedid"/>
+    <field name="related_id" ref="module.related_id"/>
   </record>
 </odoo>
 ```
@@ -1569,7 +1569,7 @@ class EstateTestCase(TransactionCase):
         # add env on cls and many other things
         super(EstateTestCase, cls).setUpClass()
 
-        # create the data for each tests. By doing it in the setUpClass instead
+        # create the data for each test. By doing it in the setUpClass instead
         # of in a setUp or in each test case, we reduce the testing time and
         # the duplication of code.
         cls.properties = cls.env['estate.property'].create([...])
@@ -1599,3 +1599,12 @@ class EstateTestCase(TransactionCase):
 > You can also have a Common class that most of the tests should inherit from;
 > this common class can define the whole setup for the module.
 > For instance, in [account](https://github.com/odoo/odoo/blob/16.0/addons/account/tests/common.py).
+
+# Reuse code with mixins
+If you need to interface with common Odoo features such as the chatter, you can rely on
+[mixins](https://www.odoo.com/documentation/16.0/developer/reference/backend/mixins.html).
+They are Odoo models exposing useful methods through inheritance.
+
+To learn and play with mixins, visit [this repository](https://github.com/tivisse/odoodays-2018/).
+This module for a plant nursery is training material developed for the OXP 2018. You don’t need to code it on your side.
+But you can check the presentations in the `/static/pdf` directory and play with the module to discover some magic features in Odoo.
